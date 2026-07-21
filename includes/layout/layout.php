@@ -1,28 +1,39 @@
 <?php
 require_once __DIR__ . '/../session.php';
 require_once __DIR__ . '/../auth.php';
+
+// requiredLogin();
+redirectIfLogin(); // protection happens here, explicitly
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
-<?php include __DIR__ . '/../header.php'; ?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
 
-<body class="font-sans bg-slate-100">
+<body>
 
-    <?php include __DIR__ . '/../sidebar.php'; ?>
+    <?php include __DIR__ . '/../header.php'; ?>
 
-    <div class="ml-64 min-h-screen flex flex-col">
+    <body class="font-sans bg-slate-100">
 
-        <?php include __DIR__ . '/../navbar.php'; ?>
+        <?php include __DIR__ . '/../sideBar.php'; ?>
 
-        <main class="flex-1 p-6">
-            <?= $content ?? '' ?>
-        </main>
+        <div class="ml-64 min-h-screen flex flex-col">
 
-        <?php include __DIR__ . '/../footer.php'; ?>
+            <?php include __DIR__ . '/../navbar.php'; ?>
 
-    </div>
+            <main class="flex-1 p-6">
+                <?= $content ?? '' ?>
+            </main>
 
-</body>
+            <?php include __DIR__ . '/../footer.php'; ?>
+
+        </div>
+
+    </body>
 
 </html>

@@ -65,8 +65,8 @@
             </div>
         </div>
 
-        <a href="../authentication/login.php"
-            class="flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 py-3 rounded-xl transition">
+        <a href="../authentication/<?php require_once __DIR__ . '/auth.php'; logout(); ?>"
+            class=" flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 py-3 rounded-xl transition">
             <i class="fa-solid fa-right-from-bracket"></i>
             Logout
         </a>

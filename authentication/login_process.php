@@ -1,62 +1,56 @@
 <?php
-session_start();
 header('Content-Type: application/json');
 
-// ភ្ជាប់ទៅកាន់ Database Connection File របស់អ្នក
-require_once '../config/database.php'; 
+require_once __DIR__ . '../config/config.php';
+require_once __DIR__ . '../includes/auth.php'; // safe — just functions now
 
-// ពិនិត្យមើល Request Method
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
     exit;
 }
 
-// ទទួលទិន្នន័យពី AJAX Request
 $action   = $_POST['action'] ?? '';
 $email    = trim($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 
-// ពិនិត្យមើល Action
 if ($action === 'login') {
-    
-    // Validate Input
+
     if (empty($email) || empty($password)) {
         echo json_encode(['success' => false, 'message' => 'Please fill in all fields.']);
         exit;
     }
 
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo json_encode(['success' => false, 'message' => 'Invalid email format.']);
+        exit;
+    }
+
     try {
-        // Query រកមើល User តាមរយៈ Email ($conn ជា mysqli ឬ pdo ដែលអ្នកបាន set ក្នុង database.php)
-        $stmt = $conn->prepare("SELECT id, username, email, password, role FROM users WHERE email = ? LIMIT 1");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $stmt = $pdo->prepare("SELECT id, username, email, password, role FROM users WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user = $result->fetch_assoc()) {
-            
-            // ផ្ទៀងផ្ទាត់ Password (ប្រើ password_verify ប្រសិនបើ Hash Password ពេល Register)
-            if (password_verify($password, $user['password']) || $password === $user['password']) {
-                
-                // រក្សាទុក Session
-                $_SESSION['user_id']   = $user['id'];
-                $_SESSION['username']  = $user['username'];
-                $_SESSION['user_role'] = $user['role'];
+        if ($user && password_verify($password, $user['password'])) {
 
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Login successful!',
-                    'role'    => $user['role']
-                ]);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Invalid email or password.']);
-            }
+            login($user); // sets session, regenerates ID
+
+            $redirect = strtolower($user['role']) === 'Admin'
+                ? '/Team2_prodcts_inventory/dashboard/index.php'
+                : '/Team2_prodcts_inventory/client/pages/index.php';
+
+            echo json_encode([
+                'success'  => true,
+                'message'  => 'Login successful!',
+                'role'     => $user['role'],
+                'redirect' => $redirect
+            ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid email or password.']);
         }
 
-        $stmt->close();
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    } catch (PDOException $e) {
+        error_log('Login error: ' . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Something went wrong. Please try again.']);
     }
 
 } else {

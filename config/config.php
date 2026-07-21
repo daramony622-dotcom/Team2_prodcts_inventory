@@ -1,5 +1,4 @@
 <?php
-    require_once __DIR__ . "/database.php";
 // =====================================
 // Application Configuration
 // =====================================
@@ -17,4 +16,5 @@ define("SITE_NAME", "Product Inventory Management System");
 define("BASE_URL", "http://localhost/Product-Inventory-System/");
 
 // Include Database Connection
+require_once __DIR__ . '/database.php';
 ?>

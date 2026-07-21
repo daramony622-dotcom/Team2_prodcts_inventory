@@ -1,86 +1,80 @@
 <?php
-// authentication/register_process.php
-
-// Return JSON response for AJAX
 header('Content-Type: application/json');
 
-// Include your database connection setup from config/database.php
-require_once '../config/database.php'; 
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/session.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitize and grab POST parameters
-    $username = trim($_POST['username'] ?? '');
-    $email    = trim($_POST['email'] ?? '');
-    $password = trim($_POST['password'] ?? '');
 
-    // 1. Basic Server-side Validation
-    if (empty($username) || empty($email) || empty($password)) {
-        echo json_encode([
-            'success' => false, 
-            'message' => 'Please fill in all required fields.'
-        ]);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
+    exit;
+}
+
+$action   = $_POST['action'] ?? '';
+$email    = trim($_POST['email'] ?? '');
+$password = $_POST['password'] ?? '';
+
+
+if ($action === 'register') {
+
+    $username         = trim($_POST['username'] ?? '');
+    $email            = trim($_POST['email'] ?? '');
+    $password         = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+
+    // 1. Required fields
+    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
+        echo json_encode(['success' => false, 'message' => 'Please fill in all fields.']);
         exit;
     }
 
+    // 2. Valid email format
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo json_encode([
-            'success' => false, 
-            'message' => 'Invalid email address format.'
-        ]);
+        echo json_encode(['success' => false, 'message' => 'Invalid email format.']);
+        exit;
+    }
+
+    // 3. Passwords match
+    if ($password !== $confirm_password) {
+        echo json_encode(['success' => false, 'message' => 'Passwords do not match.']);
+        exit;
+    }
+
+    // 4. Minimum password strength
+    if (strlen($password) < 8) {
+        echo json_encode(['success' => false, 'message' => 'Password must be at least 8 characters.']);
         exit;
     }
 
     try {
-        // 2. Check if the email already exists in the `users` table
-        $checkStmt = $pdo->prepare("SELECT id FROM users WHERE email = :email LIMIT 1");
-        $checkStmt->execute([':email' => $email]);
+        // 5. Check email isn't already taken
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
 
-        if ($checkStmt->fetch()) {
-            echo json_encode([
-                'success' => false, 
-                'message' => 'An account with this email address already exists.'
-            ]);
+        if ($stmt->fetch()) {
+            echo json_encode(['success' => false, 'message' => 'Email is already registered.']);
             exit;
         }
 
-        // 3. Hash the password securely
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        // 6. Hash password and insert
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        // 4. Insert the new user (default role set to 'Staff' as per your SQL schema)
-        $insertStmt = $pdo->prepare("
-            INSERT INTO users (username, email, password, role) 
-            VALUES (:username, :email, :password, 'Staff')
-        ");
+        $stmt = $pdo->prepare(
+            "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)"
+        );
+        $stmt->execute([$username, $email, $hashed_password, 'Client']); // default role
 
-        $executed = $insertStmt->execute([
-            ':username' => $username,
-            ':email'    => $email,
-            ':password' => $hashedPassword
+        echo json_encode([
+            'success' => true,
+            'message' => 'Account created successfully! You can now log in.'
         ]);
-
-        if ($executed) {
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Account created successfully! Redirecting to login...'
-            ]);
-        } else {
-            echo json_encode([
-                'success' => false, 
-                'message' => 'Failed to register account. Please try again.'
-            ]);
-        }
 
     } catch (PDOException $e) {
-        // Log $e->getMessage() internally in production instead of outputting direct errors
-        echo json_encode([
-            'success' => false, 
-            'message' => 'Database error: ' . $e->getMessage()
-        ]);
+        error_log('Register error: ' . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Something went wrong. Please try again.']);
     }
+
 } else {
-    // Block non-POST requests
-    echo json_encode([
-        'success' => false, 
-        'message' => 'Invalid request method.'
-    ]);
+    echo json_encode(['success' => false, 'message' => 'Invalid action.']);
 }
+?>

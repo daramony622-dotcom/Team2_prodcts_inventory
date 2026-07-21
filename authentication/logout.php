@@ -1,29 +1,24 @@
 <?php
 // authentication/logout.php
+require_once __DIR__ . '/../includes/auth.php';
 
-// 1. Initialize the session
-session_start();
+    $_SESSION = [];
 
-// 2. Unset all session variables
-$_SESSION = array();
+    if (ini_get('session.use_cookies')) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(),
+            '',
+            time() - 3600,
+            $params['path'],
+            $params['domain'],
+            $params['secure'],
+            $params['httponly']
+        );
+    }
 
-// 3. Destroy the session cookie if it exists
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(
-        session_name(),
-        '',
-        time() - 42000,
-        $params["path"],
-        $params["domain"],
-        $params["secure"],
-        $params["httponly"]
-    );
-}
+    session_destroy();
 
-// 4. Destroy the session on the server
-session_destroy();
-
-// 5. Redirect the user to the login page
-header("Location: login.php");
-exit;
+    header('Location: /Team2_prodcts_inventory/authentication/login.php');
+    exit;
+?>

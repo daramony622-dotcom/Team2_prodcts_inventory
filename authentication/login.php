@@ -1,80 +1,115 @@
 <?php
-session_start();
+    if(session_status() === PHP_SESSION_NONE){
+        session_start();
+    }
+require_once __DIR__ . '/../includes/auth.php';
+redirectIfLogin();
 
-// ប្រសិនបើធ្លាប់ Login រួចហើយ ឱ្យ Redirect ទៅតាម Role
+// If already logged in, redirect according to role
 if (isset($_SESSION['user_id'])) {
-    if (strtolower($_SESSION['user_role'] ?? '') === 'admin') {
-        header('Location: admin/dashboard.php');
+    if (strtolower($_SESSION['user_role'] ?? '') === 'Admin') {
+        header('Location: ../dashboard/index.php');
     } else {
-        header('Location: client/index.php');
+        header('Location: ../client/pages/index.php');
     }
     exit;
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Login | ETEC Center</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="jquery/jquery-3.7.1.min.js"></script>
+    <!-- <link rel="stylesheet" href="../css/style.css"> -->
+    <script src="../Js/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
+
 <body>
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-700 to-indigo-500 px-4">
 
-<div class="login-wrapper">
-    <div class="login-box">
-        <h2>ETEC Center</h2>
-        <p>Login to manage category and product</p>
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8">
 
-        <div id="alertBox"></div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-1">ETEC Center</h2>
+            <p class="text-gray-500 text-sm mb-6">Login to manage category and product</p>
 
-        <form id="loginForm">
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="email" name="email" value="admin@etec.com" required>
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="password" name="password" value="admin123" required>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width:100%">Login</button>
-        </form>
+            <div id="alertBox" class="mb-4"></div>
 
-        <p style="margin-top:14px; text-align:center;">
-            No account? <a href="register.php">Register</a>
-        </p>
+            <form id="loginForm" class="space-y-4">
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="email" name="email" required
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="password" name="password" required
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">
+                    Login
+                </button>
+
+            </form>
+
+            <p class="mt-5 text-center text-sm text-gray-600">
+                No account?
+                <a href="register.php" class="text-blue-600 font-medium hover:underline">Register</a>
+            </p>
+
+        </div>
+
     </div>
-</div>
+    <script>
+    $(document).ready(function() {
+        $('#loginForm').on('submit', function(e) {
+            e.preventDefault();
 
-<script>
-$(document).ready(function () {
-    $('#loginForm').on('submit', function (e) {
-        e.preventDefault();
+            const $alertBox = $('#alertBox');
+            const formData = new FormData(this);
+            formData.append('action', 'login'); // required by login_process.php
 
-        $.ajax({
-            url: 'api/auth_handler.php',
-            method: 'POST',
-            dataType: 'json',
-            data: {
-                action: 'login',
-                email: $('#email').val(),
-                password: $('#password').val()
-            },
-            success: function (res) {
-                if (res.success) {
-                    var role = (res.role || '').toLowerCase();
-                    window.location.href = (role === 'admin') ? 'admin/dashboard.php' : 'client/index.php';
-                } else {
-                    $('#alertBox').html('<div class="alert alert-error">' + res.message + '</div>');
+            $.ajax({
+                url: 'login_process.php',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function(data) {
+                    if (data.success) {
+                        $alertBox.html(`
+            <div class="bg-green-100 border border-green-300 text-green-700 text-sm px-4 py-2.5 rounded-lg">
+                ${data.message}
+            </div>`);
+
+                        setTimeout(function() {
+                            window.location.href = $alertBox.data('redirect') ||
+                                data.redirect;
+                        }, 1200);
+                    } else {
+                        $alertBox.html(`
+            <div class="bg-red-100 border border-red-300 text-red-700 text-sm px-4 py-2.5 rounded-lg">
+                ${data.message}
+            </div>`);
+                    }
+                },
+                error: function() {
+                    $alertBox.html(`
+                    <div class="bg-red-100 border border-red-300 text-red-700 text-sm px-4 py-2.5 rounded-lg">
+                        Something went wrong. Please try again.
+                    </div>`);
                 }
-            },
-            error: function () {
-                $('#alertBox').html('<div class="alert alert-error">Something went wrong. Please try again!</div>');
-            }
+            });
         });
     });
-});
-</script>
+    </script>
 
 </body>
+
 </html>
