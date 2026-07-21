@@ -1,39 +1,32 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/session.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+requiredAdmin();
 
 if (!isset($_GET['id'])) {
-    header("Location: index.php");
+    header('Location: ' . BASE_URL . '/products/index.php');
     exit;
 }
 
-$id = (int)$_GET['id'];
+$id = (int) $_GET['id'];
+$productStmt = $pdo->prepare('SELECT image FROM products WHERE id = :id');
+$productStmt->execute([':id' => $id]);
+$product = $productStmt->fetch(PDO::FETCH_ASSOC);
 
-// Get Product
-$sql = "SELECT image FROM products WHERE id = ?";
-$stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "i", $id);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-
-if ($product = mysqli_fetch_assoc($result)) {
-
-    // Delete image file
+if ($product) {
     if (!empty($product['image'])) {
-
-        $imagePath = __DIR__ . "/../assets/uploads/products/" . $product['image'];
-
+        $imagePath = __DIR__ . '/../assets/uploads/products/' . $product['image'];
         if (file_exists($imagePath)) {
             unlink($imagePath);
         }
     }
 
-    // Delete product
-    $delete = "DELETE FROM products WHERE id = ?";
-    $stmt = mysqli_prepare($conn, $delete);
-    mysqli_stmt_bind_param($stmt, "i", $id);
-    mysqli_stmt_execute($stmt);
+    $deleteStmt = $pdo->prepare('DELETE FROM products WHERE id = :id');
+    $deleteStmt->execute([':id' => $id]);
 }
 
-header("Location: index.php");
+header('Location: ' . BASE_URL . '/products/index.php');
 exit;
 ?>

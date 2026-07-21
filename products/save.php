@@ -1,148 +1,138 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/session.php';
+require_once __DIR__ . '/../includes/auth.php';
 
-// Upload folder
+requiredAdmin();
+
 $uploadDir = __DIR__ . '/../assets/uploads/products/';
-
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0777, true);
 }
 
-/*
-|--------------------------------------------------------------------------
-| ADD PRODUCT
-|--------------------------------------------------------------------------
-*/
-if (isset($_POST['save_product'])) {
-
-    $name        = trim($_POST['name']);
-    $category_id = (int)$_POST['category_id'];
-    $supplier_id = (int)$_POST['supplier_id'];
-    $price       = $_POST['price'];
-    $quantity    = $_POST['quantity'];
-    $description = trim($_POST['description']);
-
-    $image = "";
-
-    // Upload Image
-    if (!empty($_FILES['image']['name'])) {
-
-        $extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-
-        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
-        if (in_array($extension, $allowed)) {
-
-            $image = time() . "_" . uniqid() . "." . $extension;
-
-            move_uploaded_file(
-                $_FILES['image']['tmp_name'],
-                $uploadDir . $image
-            );
-        }
+function uploadProductImage(array $file, string $uploadDir): string
+{
+    if (empty($file['name'])) {
+        return '';
     }
 
-    $sql = "INSERT INTO products
-            (category_id, supplier_id, name, price, quantity, description, image)
-            VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
-    $stmt = mysqli_prepare($conn, $sql);
+    if (!in_array($extension, $allowed, true)) {
+        return '';
+    }
 
-    mysqli_stmt_bind_param(
-        $stmt,
-        "iisdiis",
-        $category_id,
-        $supplier_id,
-        $name,
-        $price,
-        $quantity,
-        $description,
-        $image
+    $imageName = time() . '_' . uniqid() . '.' . $extension;
+    move_uploaded_file($file['tmp_name'], $uploadDir . $imageName);
+
+    return $imageName;
+}
+
+if (isset($_POST['save_product'])) {
+    $name        = trim($_POST['name'] ?? '');
+    $productCode = trim($_POST['product_code'] ?? '');
+    $categoryId  = (int) ($_POST['category_id'] ?? 0);
+    $supplierId  = (int) ($_POST['supplier_id'] ?? 0);
+    $price       = (float) ($_POST['price'] ?? 0);
+    $quantity    = (int) ($_POST['quantity'] ?? 0);
+    $description = trim($_POST['description'] ?? '');
+    $image       = uploadProductImage($_FILES['image'] ?? [], $uploadDir);
+
+    if ($name === '' || $productCode === '' || $categoryId <= 0 || $supplierId <= 0) {
+        header('Location: ' . BASE_URL . '/products/add.php?error=missing_supplier');
+        exit;
+    }
+
+    $supplierExists = $pdo->prepare('SELECT id FROM suppliers WHERE id = :id LIMIT 1');
+    $supplierExists->execute([':id' => $supplierId]);
+    if (!$supplierExists->fetch(PDO::FETCH_ASSOC)) {
+        header('Location: ' . BASE_URL . '/products/add.php?error=invalid_supplier');
+        exit;
+    }
+
+    $stmt = $pdo->prepare(
+        'INSERT INTO products (category_id, supplier_id, product_name, product_code, price, quantity, description, image)
+        VALUES (:category_id, :supplier_id, :product_name, :product_code, :price, :quantity, :description, :image)'
     );
 
-    mysqli_stmt_execute($stmt);
+    $stmt->execute([
+        ':category_id' => $categoryId,
+        ':supplier_id' => $supplierId,
+        ':product_name' => $name,
+        ':product_code' => $productCode,
+        ':price' => $price,
+        ':quantity' => $quantity,
+        ':description' => $description,
+        ':image' => $image,
+    ]);
 
-    header("Location: index.php");
+    header('Location: ' . BASE_URL . '/products/index.php');
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE PRODUCT
-|--------------------------------------------------------------------------
-*/
 if (isset($_POST['update_product'])) {
+    $id          = (int) ($_POST['id'] ?? 0);
+    $name        = trim($_POST['name'] ?? '');
+    $productCode = trim($_POST['product_code'] ?? '');
+    $categoryId  = (int) ($_POST['category_id'] ?? 0);
+    $supplierId  = (int) ($_POST['supplier_id'] ?? 0);
+    $price       = (float) ($_POST['price'] ?? 0);
+    $quantity    = (int) ($_POST['quantity'] ?? 0);
+    $description = trim($_POST['description'] ?? '');
+    $image       = trim($_POST['old_image'] ?? '');
 
-    $id          = (int)$_POST['id'];
-    $name        = trim($_POST['name']);
-    $category_id = (int)$_POST['category_id'];
-    $supplier_id = (int)$_POST['supplier_id'];
-    $price       = $_POST['price'];
-    $quantity    = $_POST['quantity'];
-    $description = trim($_POST['description']);
+    if ($id <= 0 || $name === '' || $productCode === '' || $categoryId <= 0 || $supplierId <= 0) {
+        header('Location: ' . BASE_URL . '/products/index.php?error=invalid_product');
+        exit;
+    }
 
-    $image = $_POST['old_image'];
+    $supplierExists = $pdo->prepare('SELECT id FROM suppliers WHERE id = :id LIMIT 1');
+    $supplierExists->execute([':id' => $supplierId]);
+    if (!$supplierExists->fetch(PDO::FETCH_ASSOC)) {
+        header('Location: ' . BASE_URL . '/products/index.php?error=invalid_supplier');
+        exit;
+    }
 
-    // Upload new image
-    if (!empty($_FILES['image']['name'])) {
-
-        // Delete old image
+    $newImage = uploadProductImage($_FILES['image'] ?? [], $uploadDir);
+    if (!empty($newImage)) {
         if (!empty($image)) {
-
             $oldFile = $uploadDir . $image;
-
             if (file_exists($oldFile)) {
-                unlink($oldFile);
+            unlink($oldFile);
             }
         }
-
-        $extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-
-        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
-        if (in_array($extension, $allowed)) {
-
-            $image = time() . "_" . uniqid() . "." . $extension;
-
-            move_uploaded_file(
-                $_FILES['image']['tmp_name'],
-                $uploadDir . $image
-            );
-        }
+        $image = $newImage;
     }
 
-    $sql = "UPDATE products SET
-
-                category_id=?,
-                supplier_id=?,
-                name=?,
-                price=?,
-                quantity=?,
-                description=?,
-                image=?
-
-            WHERE id=?";
-
-    $stmt = mysqli_prepare($conn, $sql);
-
-    mysqli_stmt_bind_param(
-        $stmt,
-        "iisdiisi",
-        $category_id,
-        $supplier_id,
-        $name,
-        $price,
-        $quantity,
-        $description,
-        $image,
-        $id
+    $stmt = $pdo->prepare(
+        'UPDATE products
+        SET category_id = :category_id,
+        supplier_id = :supplier_id,
+        product_name = :product_name,
+        product_code = :product_code,
+        price = :price,
+        quantity = :quantity,
+        description = :description,
+        image = :image
+        WHERE id = :id'
     );
 
-    mysqli_stmt_execute($stmt);
+    $stmt->execute([
+        ':category_id' => $categoryId,
+        ':supplier_id' => $supplierId,
+        ':product_name' => $name,
+        ':product_code' => $productCode,
+        ':price' => $price,
+        ':quantity' => $quantity,
+        ':description' => $description,
+        ':image' => $image,
+        ':id' => $id,
+    ]);
 
-    header("Location: index.php");
+    header('Location: ' . BASE_URL . '/products/index.php');
     exit;
 }
 
-header("Location: index.php");
+header('Location: ' . BASE_URL . '/products/index.php');
 exit;
