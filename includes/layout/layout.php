@@ -2,9 +2,7 @@
 require_once __DIR__ . '/../session.php';
 require_once __DIR__ . '/../auth.php';
 
-// Fixed: You MUST use requiredLogin() here to protect the dashboard.
-// This kicks out anyone who is NOT logged in.
-requiredLogin(); 
+requiredLogin();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,7 +10,8 @@ requiredLogin();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | ETEC Center</title> <!-- Added a more descriptive title -->
+    <title>Dashboard | ETEC Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
 <body class="font-sans bg-slate-100">

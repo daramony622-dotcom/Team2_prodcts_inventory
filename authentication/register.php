@@ -1,13 +1,8 @@
 <?php
-session_start();
-if (isset($_SESSION['user_id'])) {
-    if (strtolower($_SESSION['role'] ?? '') === 'admin') {
-        header('Location: /Tem2_products_inventory/dashboard/index.php');
-    } else {
-        header('Location:  /Tem2_products_inventory/client/pages/index.php');
-    }
-    exit;
-}
+require_once __DIR__ . '/../includes/session.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+redirectIfLogin();
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -1,28 +1,46 @@
 <?php
 require_once __DIR__ . '/session.php';
 
+// Base URL path matching your project folder
+if (!defined('BASE_URL')) {
+    define('BASE_URL', '/Team2_prodcts_inventory');
+}
+
 function isLoggedIn(): bool
 {
     return isset($_SESSION['user_id']);
 }
 
-// Protect private pages — call this explicitly at the top of any page that needs login.
-function requiredLogin(): void
+// Redirect logged-in users away from login/register pages
+function redirectIfLogin(): void
 {
-    if (!isLoggedIn()) {
-        header('Location: /Team2_prodcts_inventory/authentication/login.php');
+    if (isLoggedIn()) {
+        $role = strtolower($_SESSION['user_role'] ?? '');
+        
+        if ($role === 'admin') {
+            header('Location: ' . BASE_URL . '/dashboard/index.php');
+        } else {
+            header('Location: ' . BASE_URL . '/client/pages/index.php');
+        }
         exit;
     }
 }
-// Redirect logged-in users away from login/register pages, based on role.
-function redirectIfLogin()
+
+// Restrict access to specific pages
+function requiredLogin(): void
 {
-    if (isLoggedIn()) {
-        if (strtolower($_SESSION['user_role'] ?? '') === 'admin') {
-            header('Location: /Team2_prodcts_inventory/dashboard/index.php');
-        } else {
-            header('Location: /Team2_prodcts_inventory/client/pages/index.php');
-        }
+    if (!isLoggedIn()) {
+        header('Location: ' . BASE_URL . '/authentication/login.php');
+        exit;
+    }
+}
+
+function requiredAdmin(): void
+{
+    requiredLogin();
+
+    if (strtolower($_SESSION['user_role'] ?? '') !== 'admin') {
+        header('Location: ' . BASE_URL . '/client/pages/index.php');
         exit;
     }
 }
@@ -35,9 +53,9 @@ function login(array $user): void
     $_SESSION['username']      = $user['username'];
     $_SESSION['user_role']     = $user['role'];
     $_SESSION['LAST_ACTIVITY'] = time();
+    $_SESSION['CREATED']       = time();
 }
 
-// Destroy the session and log the user out.
 function logout(): void
 {
     $_SESSION = [];
@@ -57,6 +75,6 @@ function logout(): void
 
     session_destroy();
 
-    header('Location: /Team2_prodcts_inventory/client/pages/index.php');
-    exit();
+    header('Location: ' . BASE_URL . '/client/pages/index.php');
+    exit;
 }

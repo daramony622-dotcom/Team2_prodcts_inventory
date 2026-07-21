@@ -199,7 +199,7 @@
                     Join our platform and simplify your inventory management today.
                 </p>
 
-                <a href="../authentication/register.php"
+                <a href="../../authentication/register.php"
                     class="inline-block mt-8 bg-white text-blue-600 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100">
 
                     Create Account

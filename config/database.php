@@ -18,8 +18,7 @@ try {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]
     );
-    echo json_encode(['success' => true, 'message' => 'Database connection established successfully.']);
 } catch (PDOException $e) {
     error_log('DB connection error: ' . $e->getMessage());
-    die(json_encode(['success' => false, 'message' => 'Database connection failed.']));
+    throw $e;
 }

@@ -1,18 +1,9 @@
 <?php
-    if(session_status() === PHP_SESSION_NONE){
-        session_start();
-    }
+require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/auth.php';
-redirectIfLogin();
 
-if (isset($_SESSION['user_id'])) {
-    if (strtolower($_SESSION['user_role'] ?? '') === 'admin') {
-        header('Location: ../dashboard/index.php');
-    } else {
-        header('Location: ../client/pages/index.php');
-    }
-    exit;
-}
+// Redirect user immediately if they are already logged in
+redirectIfLogin();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,8 +11,7 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <title>Login | ETEC Center</title>
-    <!-- <link rel="stylesheet" href="../css/style.css"> -->
-    <script src="../Js/jquery-3.7.1.min.js"></script>
+    <script src="../js/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
@@ -72,7 +62,7 @@ if (isset($_SESSION['user_id'])) {
 
             const $alertBox = $('#alertBox');
             const formData = new FormData(this);
-            formData.append('action', 'login'); // required by login_process.php
+            formData.append('action', 'login');
 
             $.ajax({
                 url: 'login_process.php',
@@ -89,10 +79,9 @@ if (isset($_SESSION['user_id'])) {
                             </div>
                         `);
 
-                        // Fixed: Directly use data.redirect sent from the backend JSON response
                         setTimeout(function() {
                             window.location.href = data.redirect;
-                        }, 1200);
+                        }, 800);
 
                     } else {
                         $alertBox.html(`
@@ -102,10 +91,11 @@ if (isset($_SESSION['user_id'])) {
                         `);
                     }
                 },
-                error: function() {
+                error: function(xhr) {
+                    console.error("AJAX Response Error:", xhr.responseText);
                     $alertBox.html(`
                         <div class="bg-red-100 border border-red-300 text-red-700 text-sm px-4 py-2.5 rounded-lg">
-                            Something went wrong. Please try again.
+                            An error occurred. Check browser console for details.
                         </div>
                     `);
                 }

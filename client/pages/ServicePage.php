@@ -43,7 +43,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
                     <div class="text-5xl">📦</div>
                     <h2 class="text-2xl font-bold mt-6">Product Management</h2>
                     <p class="mt-4 text-gray-600">
-                        Add, edit, organize, and monitor all your products from one dashboard.
+                        បន្ថែម កែសម្រួល រៀបចំ និងតាមដានផលិតផលទាំងអស់របស់អ្នកពីផ្ទាំងគ្រប់គ្រងតែមួយ។
                     </p>
                 </div>
 
@@ -52,7 +52,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
                     <div class="text-5xl">🏷️</div>
                     <h2 class="text-2xl font-bold mt-6">Category Management</h2>
                     <p class="mt-4 text-gray-600">
-                        Organize products into categories for faster searching and reporting.
+                        រៀបចំផលិតផលជាប្រភេទសម្រាប់ស្វែងរក និងរាយការណ៍កាន់តែលឿន។
                     </p>
                 </div>
 
@@ -61,7 +61,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
                     <div class="text-5xl">🚚</div>
                     <h2 class="text-2xl font-bold mt-6">Supplier Management</h2>
                     <p class="mt-4 text-gray-600">
-                        Store supplier information and manage purchasing efficiently.
+                        រក្សាទុកព័ត៌មានអ្នកផ្គត់ផ្គង់ និងគ្រប់គ្រងការទិញបានយ៉ាងមានប្រសិទ្ធភាព។
                     </p>
                 </div>
 
@@ -70,7 +70,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
                     <div class="text-5xl">📥</div>
                     <h2 class="text-2xl font-bold mt-6">Stock In</h2>
                     <p class="mt-4 text-gray-600">
-                        Record incoming inventory and automatically update stock levels.
+                        កត់ត្រាទំនិញចូល និងធ្វើបច្ចុប្បន្នភាពកម្រិតស្តុកដោយស្វ័យប្រវត្តិ។
                     </p>
                 </div>
 
@@ -79,7 +79,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
                     <div class="text-5xl">📤</div>
                     <h2 class="text-2xl font-bold mt-6">Stock Out</h2>
                     <p class="mt-4 text-gray-600">
-                        Track outgoing products and maintain accurate inventory records.
+                        តាមដានផលិតផលចេញ និងរក្សាទុកកំណត់ត្រាស្តុកឱ្យបានត្រឹមត្រូវ។
                     </p>
                 </div>
 
@@ -88,7 +88,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
                     <div class="text-5xl">📊</div>
                     <h2 class="text-2xl font-bold mt-6">Reports & Analytics</h2>
                     <p class="mt-4 text-gray-600">
-                        Generate inventory reports with useful statistics for better decisions.
+                        បង្កើតរបាយការណ៍ស្តុកជាមួយនឹងស្ថិតិដែលមានប្រយោជន៍សម្រាប់ការសម្រេចចិត្តកាន់តែប្រសើរ។
                     </p>
                 </div>
 
@@ -111,7 +111,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
                 Create an account today and start organizing your products efficiently.
             </p>
 
-            <a href="../authentication/register.php"
+            <a href="../../authentication/register.php"
                 class="inline-block mt-8 bg-white text-blue-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100">
 
                 Get Started

@@ -39,7 +39,7 @@
 
                     <li><a href="../pages/AboutPage.php" class="hover:text-white">About</a></li>
 
-                    <li><a href="../pages/ServicesPage.php" class="hover:text-white">Services</a></li>
+                    <li><a href="../pages/ServicePage.php" class="hover:text-white">Services</a></li>
 
                     <li><a href="../pages/ContactPage.php" class="hover:text-white">Contact</a></li>
 
