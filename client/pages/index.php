@@ -14,7 +14,6 @@ require_once __DIR__ . '/../includes/Navbar.php';
     <title>Home</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-
 </head>
 
 <body class="bg-gray-50">

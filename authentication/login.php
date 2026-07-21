@@ -5,9 +5,8 @@
 require_once __DIR__ . '/../includes/auth.php';
 redirectIfLogin();
 
-// If already logged in, redirect according to role
 if (isset($_SESSION['user_id'])) {
-    if (strtolower($_SESSION['user_role'] ?? '') === 'Admin') {
+    if (strtolower($_SESSION['user_role'] ?? '') === 'admin') {
         header('Location: ../dashboard/index.php');
     } else {
         header('Location: ../client/pages/index.php');
@@ -65,6 +64,7 @@ if (isset($_SESSION['user_id'])) {
         </div>
 
     </div>
+
     <script>
     $(document).ready(function() {
         $('#loginForm').on('submit', function(e) {
@@ -84,26 +84,30 @@ if (isset($_SESSION['user_id'])) {
                 success: function(data) {
                     if (data.success) {
                         $alertBox.html(`
-            <div class="bg-green-100 border border-green-300 text-green-700 text-sm px-4 py-2.5 rounded-lg">
-                ${data.message}
-            </div>`);
+                            <div class="bg-green-100 border border-green-300 text-green-700 text-sm px-4 py-2.5 rounded-lg">
+                                ${data.message}
+                            </div>
+                        `);
 
+                        // Fixed: Directly use data.redirect sent from the backend JSON response
                         setTimeout(function() {
-                            window.location.href = $alertBox.data('redirect') ||
-                                data.redirect;
+                            window.location.href = data.redirect;
                         }, 1200);
+
                     } else {
                         $alertBox.html(`
-            <div class="bg-red-100 border border-red-300 text-red-700 text-sm px-4 py-2.5 rounded-lg">
-                ${data.message}
-            </div>`);
+                            <div class="bg-red-100 border border-red-300 text-red-700 text-sm px-4 py-2.5 rounded-lg">
+                                ${data.message}
+                            </div>
+                        `);
                     }
                 },
                 error: function() {
                     $alertBox.html(`
-                    <div class="bg-red-100 border border-red-300 text-red-700 text-sm px-4 py-2.5 rounded-lg">
-                        Something went wrong. Please try again.
-                    </div>`);
+                        <div class="bg-red-100 border border-red-300 text-red-700 text-sm px-4 py-2.5 rounded-lg">
+                            Something went wrong. Please try again.
+                        </div>
+                    `);
                 }
             });
         });

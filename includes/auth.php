@@ -14,9 +14,8 @@ function requiredLogin(): void
         exit;
     }
 }
-
 // Redirect logged-in users away from login/register pages, based on role.
-function redirectIfLogin(): void
+function redirectIfLogin()
 {
     if (isLoggedIn()) {
         if (strtolower($_SESSION['user_role'] ?? '') === 'admin') {
@@ -28,7 +27,6 @@ function redirectIfLogin(): void
     }
 }
 
-// Save user information into the session after successful login.
 function login(array $user): void
 {
     session_regenerate_id(true);

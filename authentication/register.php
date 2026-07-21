@@ -2,9 +2,9 @@
 session_start();
 if (isset($_SESSION['user_id'])) {
     if (strtolower($_SESSION['role'] ?? '') === 'admin') {
-        header('Location: ../dashboard/index.php');
+        header('Location: /Tem2_products_inventory/dashboard/index.php');
     } else {
-        header('Location: ../client/pages/index.php');
+        header('Location:  /Tem2_products_inventory/client/pages/index.php');
     }
     exit;
 }
@@ -16,14 +16,13 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register | ETEC Center</title>
-    <!-- Adjust CSS path based on your folder location or root -->
-    <link rel="stylesheet" href="../css/style.css">
-
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Using jQuery CDN for reliability -->
     <script src="../js/jquery-3.7.1.min.js"></script>
+</head> <!-- Added missing closing head tag -->
 
-<body>
+<body class="bg-gray-50">
+    <!-- Added background class safely -->
     <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-700 to-indigo-500 px-4">
 
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8">
@@ -34,6 +33,9 @@ if (isset($_SESSION['user_id'])) {
             <div id="alertBox" class="mb-4"></div>
 
             <form id="registerForm" class="space-y-4">
+
+                <!-- Added action field to match backend requirements -->
+                <input type="hidden" name="action" value="register">
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
@@ -53,6 +55,13 @@ if (isset($_SESSION['user_id'])) {
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
 
+                <!-- Fixed: Added Confirm Password field to match backend validation -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
                 <button type="submit"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">
                     Register
@@ -68,6 +77,7 @@ if (isset($_SESSION['user_id'])) {
         </div>
 
     </div>
+
     <script>
     $(document).ready(function() {
         $('#registerForm').on('submit', function(e) {
@@ -90,9 +100,9 @@ if (isset($_SESSION['user_id'])) {
                             ${data.message}
                         </div>`);
 
-                        // Redirect after a short delay
+                        // Fixed: Relative path to login page to prevent 404 error
                         setTimeout(function() {
-                            window.location.href = '/login.php';
+                            window.location.href = 'login.php';
                         }, 1500);
                     } else {
                         $alertBox.html(`

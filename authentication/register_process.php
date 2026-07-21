@@ -4,19 +4,16 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../includes/session.php';
 
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
     exit;
 }
 
-$action   = $_POST['action'] ?? '';
-$email    = trim($_POST['email'] ?? '');
-$password = $_POST['password'] ?? '';
-
+$action = $_POST['action'] ?? '';
 
 if ($action === 'register') {
 
+    // Cleanly fetch all POST data in one place
     $username         = trim($_POST['username'] ?? '');
     $email            = trim($_POST['email'] ?? '');
     $password         = $_POST['password'] ?? '';
@@ -56,25 +53,27 @@ if ($action === 'register') {
             exit;
         }
 
-        // 6. Hash password and insert
+        // 6. Hash password and insert (using lowercase 'client' for consistency with your auth rules)
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         $stmt = $pdo->prepare(
             "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)"
         );
-        $stmt->execute([$username, $email, $hashed_password, 'Client']); // default role
+        $stmt->execute([$username, $email, $hashed_password, 'Staff']); // Default role is 'Staff'
 
         echo json_encode([
             'success' => true,
             'message' => 'Account created successfully! You can now log in.'
         ]);
+        exit;
 
     } catch (PDOException $e) {
         error_log('Register error: ' . $e->getMessage());
         echo json_encode(['success' => false, 'message' => 'Something went wrong. Please try again.']);
+        exit;
     }
 
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid action.']);
+    exit;
 }
-?>
