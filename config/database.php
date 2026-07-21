@@ -1,7 +1,7 @@
 <?php
     $host = 'localhost';
     $username = 'root';
-    $db = '';
+    $db = 'inventory_db';
     $password = '';
 
     
@@ -14,7 +14,10 @@
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]
             
-        );
+            
+            );
+            
+            echo "Database connection successful!";
     }catch (PDOException $e){
         die(json_encode(['status'=>false, 'message'=>'Error connection Database!']));
     }
