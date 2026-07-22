@@ -22,7 +22,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
 
         <!-- ================= HERO ================= -->
 
-        <section class="bg-gradient-to-r from-blue-700 to-indigo-700 text-white">
+        <section class="bg-gradient-to-r from-blue-500 to-indigo-300 text-white">
 
             <div class="max-w-7xl mx-auto px-6 py-24">
 
@@ -45,7 +45,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
                         <div class="mt-8 flex gap-4">
 
                             <a href="../../dashboard/index.php"
-                                class="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold">
+                                class="bg-white text-blue-500 px-6 py-3 rounded-lg font-semibold">
                                 Go to Dashboard
                             </a>
 
@@ -73,12 +73,12 @@ require_once __DIR__ . '/../includes/Navbar.php';
                         <div class="mt-8 flex gap-4">
 
                             <a href="../../authentication/login.php"
-                                class="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold">
+                                class="bg-white text-blue-500 px-6 py-3 rounded-lg font-semibold">
                                 Get Started
                             </a>
 
                             <a href="#features"
-                                class="border border-white px-6 py-3 rounded-lg hover:bg-white hover:text-blue-700 transition">
+                                class="border border-white px-6 py-3 rounded-lg hover:bg-white hover:text-blue-600 transition">
                                 Learn More
                             </a>
 
