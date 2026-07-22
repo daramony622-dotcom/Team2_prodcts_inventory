@@ -1,48 +1,52 @@
 <?php
-require_once '../config/database.php';
-require_once '../includes/session.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/session.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+requiredAdmin();
 
 if (isset($_GET['id'])) {
-    $id = intval($_GET['id']);
+    $id = (int) ($_GET['id'] ?? 0);
 
-    // Fetch record to know product_id and quantity to subtract
-    $fetch_query = "SELECT product_id, quantity FROM stock_in WHERE id = $id";
-    $result = mysqli_query($conn, $fetch_query);
+    try {
+        $fetchStmt = $pdo->prepare('SELECT product_id, quantity FROM stock_ins WHERE id = :id LIMIT 1');
+        $fetchStmt->execute([':id' => $id]);
+        $row = $fetchStmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $product_id = $row['product_id'];
-        $quantity = $row['quantity'];
-
-        mysqli_begin_transaction($conn);
-
-        try {
-            // 1. Revert product quantity
-            $update_product = "UPDATE products SET quantity = quantity - $quantity WHERE id = $product_id";
-            if (!mysqli_query($conn, $update_product)) {
-                throw new Exception("Failed to revert product quantity.");
-            }
-
-            // 2. Delete stock_in record
-            $delete_query = "DELETE FROM stock_in WHERE id = $id";
-            if (!mysqli_query($conn, $delete_query)) {
-                throw new Exception("Failed to delete stock-in record.");
-            }
-
-            mysqli_commit($conn);
-            header("Location: index.php?success=Stock-in record deleted and product inventory updated successfully.");
-            exit();
-
-        } catch (Exception $e) {
-            mysqli_rollback($conn);
-            header("Location: index.php?error=" . urlencode($e->getMessage()));
+        if (!$row) {
+            header('Location: ' . BASE_URL . '/stock_in/index.php?error=Record not found.');
             exit();
         }
-    } else {
-        header("Location: index.php?error=Record not found.");
+
+        $product_id = (int) $row['product_id'];
+        $quantity = (int) $row['quantity'];
+
+        $pdo->beginTransaction();
+
+        $updateStmt = $pdo->prepare(
+            'UPDATE products
+            SET quantity = quantity - :quantity
+            WHERE id = :product_id'
+        );
+        $updateStmt->execute([
+            ':quantity' => $quantity,
+            ':product_id' => $product_id,
+        ]);
+
+        $deleteStmt = $pdo->prepare('DELETE FROM stock_ins WHERE id = :id');
+        $deleteStmt->execute([':id' => $id]);
+
+        $pdo->commit();
+        header('Location: ' . BASE_URL . '/stock_in/index.php?success=Stock-in record deleted and product inventory updated successfully.');
+        exit();
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        header('Location: ' . BASE_URL . '/stock_in/index.php?error=' . urlencode($e->getMessage()));
         exit();
     }
 } else {
-    header("Location: index.php");
+    header('Location: ' . BASE_URL . '/stock_in/index.php');
     exit();
 }

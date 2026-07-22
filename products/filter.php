@@ -1,81 +1,59 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/config.php';
 
-$category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
+$category_id = isset($_GET['category_id']) ? (int) $_GET['category_id'] : 0;
 
-$sql = "SELECT p.*,
-               c.name AS category_name,
-               s.name AS supplier_name
+$sql = "SELECT p.id, p.product_name, p.product_code, p.price, p.quantity, p.image, p.description,
+                c.category_name,
+                s.supplier_name
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id
         LEFT JOIN suppliers s ON p.supplier_id = s.id";
 
-if ($category_id > 0) {
-    $sql .= " WHERE p.category_id = ?";
-}
-
-$sql .= " ORDER BY p.id DESC";
-
-$stmt = mysqli_prepare($conn, $sql);
+$params = [];
 
 if ($category_id > 0) {
-    mysqli_stmt_bind_param($stmt, "i", $category_id);
+    $sql .= ' WHERE p.category_id = :category_id';
+    $params[':category_id'] = $category_id;
 }
 
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
+$sql .= ' ORDER BY p.id DESC';
 
-if (mysqli_num_rows($result) > 0) {
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    while ($row = mysqli_fetch_assoc($result)) {
-
+if (!empty($products)):
+    foreach ($products as $row):
         $image = !empty($row['image'])
-            ? "../assets/uploads/products/" . $row['image']
-            : "../assets/images/default.png";
+            ? BASE_URL . '/assets/uploads/products/' . $row['image']
+            : BASE_URL . '/client/pages/assets/images/default.png';
 ?>
 
 <tr>
-
-    <td><?= $row['id']; ?></td>
-
+    <td><?= (int) $row['id']; ?></td>
     <td>
-        <img src="<?= $image; ?>"
-             width="60"
-             height="60"
-             class="rounded border">
+        <img src="<?= htmlspecialchars($image); ?>" width="60" height="60" class="rounded border">
     </td>
-
-    <td><?= htmlspecialchars($row['name']); ?></td>
-
-    <td><?= htmlspecialchars($row['category_name']); ?></td>
-
-    <td><?= htmlspecialchars($row['supplier_name']); ?></td>
-
-    <td>$<?= number_format($row['price'], 2); ?></td>
-
-    <td><?= $row['quantity']; ?></td>
-
+    <td><?= htmlspecialchars($row['product_name']); ?></td>
+    <td><?= htmlspecialchars($row['category_name'] ?? '-'); ?></td>
+    <td><?= htmlspecialchars($row['supplier_name'] ?? '-'); ?></td>
+    <td>$<?= number_format((float) $row['price'], 2); ?></td>
+    <td><?= (int) $row['quantity']; ?></td>
     <td>
-
-        <a href="edit.php?id=<?= $row['id']; ?>"
-           class="bg-yellow-500 text-white px-3 py-1 rounded">
+        <a href="edit.php?id=<?= (int) $row['id']; ?>" class="bg-yellow-500 text-white px-3 py-1 rounded">
             Edit
         </a>
-
-        <a href="delete.php?id=<?= $row['id']; ?>"
-           onclick="return confirm('Delete this product?')"
-           class="bg-red-600 text-white px-3 py-1 rounded">
+        <a href="delete.php?id=<?= (int) $row['id']; ?>" onclick="return confirm('Delete this product?')"
+            class="bg-red-600 text-white px-3 py-1 rounded">
             Delete
         </a>
-
     </td>
-
 </tr>
 
 <?php
-    }
-
-} else {
+    endforeach;
+else:
 ?>
 
 <tr>
@@ -85,5 +63,5 @@ if (mysqli_num_rows($result) > 0) {
 </tr>
 
 <?php
-}
+endif;
 ?>

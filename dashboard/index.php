@@ -30,9 +30,11 @@ ob_start();
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-slate-800">Dashboard Overview</h1>
-            <p class="text-sm text-slate-500">Welcome back, <?= htmlspecialchars($_SESSION['username'] ?? 'Admin') ?>!</p>
+            <p class="text-sm text-slate-500">Welcome back, <?= htmlspecialchars($_SESSION['username'] ?? 'Admin') ?>!
+            </p>
         </div>
-        <div class="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-semibold">
+        <div
+            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-semibold">
             <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
             System Online
         </div>
@@ -151,17 +153,18 @@ ob_start();
 
         <div class="space-y-4">
             <?php foreach ($graphLabels as $key => $label): ?>
-                <?php $value = (int) ($stats[$key] ?? 0); ?>
-                <?php $percent = $graphMax > 0 ? min(100, round(($value / $graphMax) * 100)) : 0; ?>
-                <div>
-                    <div class="flex items-center justify-between text-sm mb-1">
-                        <span class="font-semibold text-slate-700"><?= htmlspecialchars($label) ?></span>
-                        <span class="text-slate-500"><?= $value ?></span>
-                    </div>
-                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                        <div class="h-3 rounded-full bg-gradient-to-r <?= $graphColors[$key] ?>" style="width: <?= $percent ?>%"></div>
-                    </div>
+            <?php $value = (int) ($stats[$key] ?? 0); ?>
+            <?php $percent = $graphMax > 0 ? min(100, round(($value / $graphMax) * 100)) : 0; ?>
+            <div>
+                <div class="flex items-center justify-between text-sm mb-1">
+                    <span class="font-semibold text-slate-700"><?= htmlspecialchars($label) ?></span>
+                    <span class="text-slate-500"><?= $value ?></span>
                 </div>
+                <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                    <div class="h-3 rounded-full bg-gradient-to-r <?= $graphColors[$key] ?>"
+                        style="width: <?= $percent ?>%"></div>
+                </div>
+            </div>
             <?php endforeach; ?>
         </div>
     </div>
@@ -171,15 +174,18 @@ ob_start();
         <div class="space-y-3">
             <div class="rounded-xl bg-slate-50 p-3">
                 <p class="text-xs text-slate-500 uppercase tracking-wide">Current Role</p>
-                <h3 class="text-lg font-bold text-slate-800 capitalize"><?= htmlspecialchars($_SESSION['user_role'] ?? 'Admin') ?></h3>
+                <h3 class="text-lg font-bold text-slate-800 capitalize">
+                    <?= htmlspecialchars($_SESSION['user_role'] ?? 'Admin') ?></h3>
             </div>
             <div class="rounded-xl bg-blue-50 p-3">
                 <p class="text-xs text-blue-700 uppercase tracking-wide">Dashboard Scope</p>
-                <p class="text-sm text-slate-700">Admin can manage inventory, categories, and stock activity from one place.</p>
+                <p class="text-sm text-slate-700">Admin can manage inventory, categories, and stock activity from one
+                    place.</p>
             </div>
             <div class="rounded-xl bg-emerald-50 p-3">
                 <p class="text-xs text-emerald-700 uppercase tracking-wide">Status</p>
-                <p class="text-sm text-slate-700">The category management section is now connected and ready for inventory updates.</p>
+                <p class="text-sm text-slate-700">The category management section is now connected and ready for
+                    inventory updates.</p>
             </div>
         </div>
     </div>

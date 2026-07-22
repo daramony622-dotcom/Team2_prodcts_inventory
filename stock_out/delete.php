@@ -1,48 +1,52 @@
 <?php
-require_once '../config/database.php';
-require_once '../includes/session.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/session.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+requiredAdmin();
 
 if (isset($_GET['id'])) {
-    $id = intval($_GET['id']);
+    $id = (int) ($_GET['id'] ?? 0);
 
-    // Fetch stock_out entry details first
-    $fetch_query = "SELECT product_id, quantity FROM stock_out WHERE id = $id";
-    $result = mysqli_query($conn, $fetch_query);
+    try {
+        $fetchStmt = $pdo->prepare('SELECT product_id, quantity FROM stock_outs WHERE id = :id LIMIT 1');
+        $fetchStmt->execute([':id' => $id]);
+        $row = $fetchStmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $product_id = $row['product_id'];
-        $quantity = $row['quantity'];
-
-        mysqli_begin_transaction($conn);
-
-        try {
-            // 1. Return stock quantity back to product inventory
-            $update_product = "UPDATE products SET quantity = quantity + $quantity WHERE id = $product_id";
-            if (!mysqli_query($conn, $update_product)) {
-                throw new Exception("Failed to restore product quantity.");
-            }
-
-            // 2. Delete stock_out record
-            $delete_query = "DELETE FROM stock_out WHERE id = $id";
-            if (!mysqli_query($conn, $delete_query)) {
-                throw new Exception("Failed to delete stock out record.");
-            }
-
-            mysqli_commit($conn);
-            header("Location: index.php?success=Record deleted and quantity restored to inventory.");
-            exit();
-
-        } catch (Exception $e) {
-            mysqli_rollback($conn);
-            header("Location: index.php?error=" . urlencode($e->getMessage()));
+        if (!$row) {
+            header('Location: ' . BASE_URL . '/stock_out/index.php?error=Record not found.');
             exit();
         }
-    } else {
-        header("Location: index.php?error=Record not found.");
+
+        $product_id = (int) $row['product_id'];
+        $quantity = (int) $row['quantity'];
+
+        $pdo->beginTransaction();
+
+        $updateStmt = $pdo->prepare(
+            'UPDATE products
+            SET quantity = quantity + :quantity
+            WHERE id = :product_id'
+        );
+        $updateStmt->execute([
+            ':quantity' => $quantity,
+            ':product_id' => $product_id,
+        ]);
+
+        $deleteStmt = $pdo->prepare('DELETE FROM stock_outs WHERE id = :id');
+        $deleteStmt->execute([':id' => $id]);
+
+        $pdo->commit();
+        header('Location: ' . BASE_URL . '/stock_out/index.php?success=Record deleted and quantity restored to inventory.');
+        exit();
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        header('Location: ' . BASE_URL . '/stock_out/index.php?error=' . urlencode($e->getMessage()));
         exit();
     }
 } else {
-    header("Location: index.php");
+    header('Location: ' . BASE_URL . '/stock_out/index.php');
     exit();
 }

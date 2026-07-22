@@ -1,46 +1,66 @@
 <?php
-require_once '../config/database.php';
-require_once '../includes/session.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/session.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+requiredAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $product_id     = intval($_POST['product_id']);
-    $quantity       = intval($_POST['quantity']);
-    $purchase_price = floatval($_POST['purchase_price']);
-    $stock_in_date  = mysqli_real_escape_string($conn, $_POST['stock_in_date']);
-    $user_id        = $_SESSION['user_id'] ?? 1; // Fallback to user ID 1 if session is unassigned
+    $product_id     = (int) ($_POST['product_id'] ?? 0);
+    $quantity       = (int) ($_POST['quantity'] ?? 0);
+    $purchase_price = (float) ($_POST['purchase_price'] ?? 0);
+    $stock_in_date  = date('Y-m-d', strtotime($_POST['stock_in_date'] ?? date('Y-m-d')));
+    $user_id        = (int) ($_SESSION['user_id'] ?? 0);
 
-    if ($product_id <= 0 || $quantity <= 0 || $purchase_price < 0) {
-        header("Location: add.php?error=Invalid input data provided.");
+    if ($product_id <= 0 || $quantity <= 0 || $purchase_price < 0 || $stock_in_date === false) {
+        header('Location: ' . BASE_URL . '/stock_in/stock_in_add.php?error=Invalid input data provided.');
         exit();
     }
 
-    // Use transaction to ensure data integrity
-    mysqli_begin_transaction($conn);
-
     try {
-        // 1. Insert stock_in record
-        $sql = "INSERT INTO stock_in (product_id, quantity, purchase_price, stock_in_date, user_id) 
-                VALUES ($product_id, $quantity, $purchase_price, '$stock_in_date', $user_id)";
-        if (!mysqli_query($conn, $sql)) {
-            throw new Exception("Failed to insert stock-in record.");
+        $productStmt = $pdo->prepare('SELECT id FROM products WHERE id = :product_id LIMIT 1');
+        $productStmt->execute([':product_id' => $product_id]);
+
+        if (!$productStmt->fetch(PDO::FETCH_ASSOC)) {
+            header('Location: ' . BASE_URL . '/stock_in/stock_in_add.php?error=Product not found.');
+            exit();
         }
 
-        // 2. Update product quantity
-        $update_product = "UPDATE products SET quantity = quantity + $quantity WHERE id = $product_id";
-        if (!mysqli_query($conn, $update_product)) {
-            throw new Exception("Failed to update product quantity.");
-        }
+        $pdo->beginTransaction();
 
-        mysqli_commit($conn);
-        header("Location: index.php?success=Stock successfully added and product quantity updated.");
+        $insertStmt = $pdo->prepare(
+            'INSERT INTO stock_ins (product_id, quantity, purchase_price, stock_in_date, user_id)
+            VALUES (:product_id, :quantity, :purchase_price, :stock_in_date, :user_id)'
+        );
+        $insertStmt->execute([
+            ':product_id' => $product_id,
+            ':quantity' => $quantity,
+            ':purchase_price' => $purchase_price,
+            ':stock_in_date' => $stock_in_date,
+            ':user_id' => $user_id,
+        ]);
+
+        $updateStmt = $pdo->prepare(
+            'UPDATE products
+            SET quantity = quantity + :quantity
+            WHERE id = :product_id'
+        );
+        $updateStmt->execute([
+            ':quantity' => $quantity,
+            ':product_id' => $product_id,
+        ]);
+
+        $pdo->commit();
+        header('Location: ' . BASE_URL . '/stock_in/index.php?success=Stock successfully added and product quantity updated.');
         exit();
-
     } catch (Exception $e) {
-        mysqli_rollback($conn);
-        header("Location: add.php?error=" . urlencode($e->getMessage()));
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        header('Location: ' . BASE_URL . '/stock_in/stock_in_add.php?error=' . urlencode($e->getMessage()));
         exit();
     }
 } else {
-    header("Location: index.php");
+    header('Location: ' . BASE_URL . '/stock_in/index.php');
     exit();
 }

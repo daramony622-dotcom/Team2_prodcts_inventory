@@ -1,63 +1,73 @@
 <?php
-require_once '../config/database.php';
-require_once '../includes/session.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/session.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+requiredAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $product_id     = intval($_POST['product_id']);
-    $quantity       = intval($_POST['quantity']);
-    $selling_price  = floatval($_POST['selling_price']);
-    $stock_out_date = mysqli_real_escape_string($conn, $_POST['stock_out_date']);
-    $user_id        = $_SESSION['user_id'] ?? 1;
+    $product_id     = (int) ($_POST['product_id'] ?? 0);
+    $quantity       = (int) ($_POST['quantity'] ?? 0);
+    $selling_price  = (float) ($_POST['selling_price'] ?? 0);
+    $stock_out_date = date('Y-m-d', strtotime($_POST['stock_out_date'] ?? date('Y-m-d')));
+    $user_id        = (int) ($_SESSION['user_id'] ?? 0);
 
-    if ($product_id <= 0 || $quantity <= 0 || $selling_price < 0) {
-        header("Location: add.php?error=Invalid input data provided.");
+    if ($product_id <= 0 || $quantity <= 0 || $selling_price < 0 || $stock_out_date === false) {
+        header('Location: ' . BASE_URL . '/stock_out/add.php?error=Invalid input data provided.');
         exit();
     }
-
-    // Check available stock in database before reducing
-    $check_stock = "SELECT quantity FROM products WHERE id = $product_id";
-    $stock_res = mysqli_query($conn, $check_stock);
-    
-    if ($stock_res && mysqli_num_rows($stock_res) > 0) {
-        $product = mysqli_fetch_assoc($stock_res);
-        $current_stock = intval($product['quantity']);
-
-        if ($quantity > $current_stock) {
-            header("Location: add.php?error=" . urlencode("Cannot stock out! Requested ($quantity) exceeds current stock ($current_stock)."));
-            exit();
-        }
-    } else {
-        header("Location: add.php?error=Product not found.");
-        exit();
-    }
-
-    // Process transaction safely
-    mysqli_begin_transaction($conn);
 
     try {
-        // 1. Insert into stock_out table
-        $sql = "INSERT INTO stock_out (product_id, quantity, selling_price, stock_out_date, user_id) 
-                VALUES ($product_id, $quantity, $selling_price, '$stock_out_date', $user_id)";
-        if (!mysqli_query($conn, $sql)) {
-            throw new Exception("Failed to record stock out.");
+        $checkStmt = $pdo->prepare('SELECT quantity FROM products WHERE id = :product_id LIMIT 1');
+        $checkStmt->execute([':product_id' => $product_id]);
+        $product = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$product) {
+            header('Location: ' . BASE_URL . '/stock_out/add.php?error=Product not found.');
+            exit();
         }
 
-        // 2. Subtract from products inventory quantity
-        $update_product = "UPDATE products SET quantity = quantity - $quantity WHERE id = $product_id";
-        if (!mysqli_query($conn, $update_product)) {
-            throw new Exception("Failed to reduce product inventory.");
+        $current_stock = (int) $product['quantity'];
+        if ($quantity > $current_stock) {
+            header('Location: ' . BASE_URL . '/stock_out/add.php?error=' . urlencode("Cannot stock out! Requested ($quantity) exceeds current stock ($current_stock)."));
+            exit();
         }
 
-        mysqli_commit($conn);
-        header("Location: index.php?success=Stock out saved and inventory updated successfully.");
+        $pdo->beginTransaction();
+
+        $insertStmt = $pdo->prepare(
+            'INSERT INTO stock_outs (product_id, quantity, selling_price, stock_out_date, user_id)
+             VALUES (:product_id, :quantity, :selling_price, :stock_out_date, :user_id)'
+        );
+        $insertStmt->execute([
+            ':product_id' => $product_id,
+            ':quantity' => $quantity,
+            ':selling_price' => $selling_price,
+            ':stock_out_date' => $stock_out_date,
+            ':user_id' => $user_id,
+        ]);
+
+        $updateStmt = $pdo->prepare(
+            'UPDATE products
+             SET quantity = quantity - :quantity
+             WHERE id = :product_id'
+        );
+        $updateStmt->execute([
+            ':quantity' => $quantity,
+            ':product_id' => $product_id,
+        ]);
+
+        $pdo->commit();
+        header('Location: ' . BASE_URL . '/stock_out/index.php?success=Stock out saved and inventory updated successfully.');
         exit();
-
     } catch (Exception $e) {
-        mysqli_rollback($conn);
-        header("Location: add.php?error=" . urlencode($e->getMessage()));
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        header('Location: ' . BASE_URL . '/stock_out/add.php?error=' . urlencode($e->getMessage()));
         exit();
     }
 } else {
-    header("Location: index.php");
+    header('Location: ' . BASE_URL . '/stock_out/index.php');
     exit();
 }
