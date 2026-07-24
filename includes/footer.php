@@ -1,19 +1,24 @@
-<footer class="bg-gray-900 text-gray-300 px-10 py-10">
+<footer class="bg-gray-900 border-t-4 border-green-500 text-gray-300 px-6 py-5">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="text-xl font-bold">
-            <span class="text-blue-500">Product</span>
-            <span class="text-white">Inventory</span>
+
+        <!-- Dashboard Title -->
+        <div class="text-lg font-semibold">
+            <span class="text-green-500">Product Inventory</span>
+            <span class="text-white">Dashboard</span>
         </div>
 
-        <div class="flex gap-6 text-sm">
-            <a href="#" class="hover:text-blue-400">Home</a>
-            <a href="#" class="hover:text-blue-400">About</a>
-            <a href="#" class="hover:text-blue-400">Services</a>
-            <a href="#" class="hover:text-blue-400">Contact</a>
+        <!-- Dashboard Info -->
+        <div class="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+            <span>📊 Dashboard</span>
+            <span>📦 Inventory Management</span>
+            <span>👥 User Panel</span>
+            <span>⚡ System Status: <span class="text-green-400">Online</span></span>
         </div>
 
-        <p class="text-sm text-gray-500">
-            &copy; <?= date('Y') ?> Product Inventory. All rights reserved.
+        <!-- Copyright -->
+        <p class="text-sm text-gray-500 text-center">
+            &copy; <?= date('Y') ?> Product Inventory Dashboard. All rights reserved.
         </p>
+
     </div>
 </footer>

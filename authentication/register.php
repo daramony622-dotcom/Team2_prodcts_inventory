@@ -10,7 +10,7 @@ redirectIfLogin();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | ETEC Center</title>
+    <title>Register to System</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Using jQuery CDN for reliability -->
     <script src="../js/jquery-3.7.1.min.js"></script>

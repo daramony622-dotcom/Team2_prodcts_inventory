@@ -10,7 +10,7 @@ redirectIfLogin();
 
 <head>
     <meta charset="UTF-8">
-    <title>Login | ETEC Center</title>
+    <title>Login System</title>
     <script src="../js/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
@@ -20,8 +20,8 @@ redirectIfLogin();
 
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8">
 
-            <h2 class="text-2xl font-bold text-gray-800 mb-1">ETEC Center</h2>
-            <p class="text-gray-500 text-sm mb-6">Login to manage category and product</p>
+            <h2 class="text-2xl font-bold text-gray-800 mb-1">Login System</h2>
+            <p class="text-gray-500 text-sm mb-6">Please enter your credentials to access the system</p>
 
             <div id="alertBox" class="mb-4"></div>
 

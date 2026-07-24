@@ -5,6 +5,8 @@ require_once __DIR__ . '/../includes/auth.php';
 
 requiredAdmin();
 
+// Whitelist allowed stats keys to prevent any unexpected input in queries
+$allowed_stats = ['categories', 'products', 'suppliers', 'stock_ins', 'stock_outs'];
 $stats = [
     'categories' => 0,
     'products' => 0,
@@ -15,12 +17,33 @@ $stats = [
 
 try {
     foreach ($stats as $key => $value) {
-        $stmt = $pdo->query("SELECT COUNT(*) FROM {$key}");
-        $stats[$key] = (int) $stmt->fetchColumn();
+        if (in_array($key, $allowed_stats, true)) {
+            $stmt = $pdo->query("SELECT COUNT(*) FROM `{$key}`");
+            $stats[$key] = (int) $stmt->fetchColumn();
+        }
     }
 } catch (PDOException $e) {
     $statsError = 'Unable to load inventory stats right now.';
 }
+
+$graphLabels = [
+    'categories' => 'Categories',
+    'products'   => 'Products',
+    'suppliers'  => 'Suppliers',
+    'stock_ins'  => 'Stock In',
+    'stock_outs' => 'Stock Out',
+];
+$chartLabels = array_values($graphLabels);
+$chartCounts = array_map(function ($key) use ($stats) {
+    return (int) ($stats[$key] ?? 0);
+}, array_keys($graphLabels));
+$chartColors = [
+    'rgba(37, 99, 235, 0.8)',
+    'rgba(99, 102, 241, 0.8)',
+    'rgba(245, 158, 11, 0.8)',
+    'rgba(16, 185, 129, 0.8)',
+    'rgba(244, 63, 94, 0.8)',
+];
 
 ob_start();
 ?>
@@ -35,7 +58,7 @@ ob_start();
         </div>
         <div
             class="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-semibold">
-            <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+            <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
             System Online
         </div>
     </div>
@@ -59,9 +82,7 @@ ob_start();
                 <i class="fa-solid fa-layer-group"></i>
             </div>
         </div>
-        <div class="mt-4 text-[11px] font-semibold text-slate-500">
-            Live inventory record
-        </div>
+        <div class="mt-4 text-[11px] font-semibold text-slate-500">Live inventory record</div>
     </div>
 
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
@@ -74,9 +95,7 @@ ob_start();
                 <i class="fa-solid fa-box"></i>
             </div>
         </div>
-        <div class="mt-4 text-[11px] font-semibold text-slate-500">
-            Product master data
-        </div>
+        <div class="mt-4 text-[11px] font-semibold text-slate-500">Product master data</div>
     </div>
 
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
@@ -89,9 +108,7 @@ ob_start();
                 <i class="fa-solid fa-truck"></i>
             </div>
         </div>
-        <div class="mt-4 text-[11px] font-semibold text-slate-500">
-            Supplier list
-        </div>
+        <div class="mt-4 text-[11px] font-semibold text-slate-500">Supplier list</div>
     </div>
 
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
@@ -104,9 +121,7 @@ ob_start();
                 <i class="fa-solid fa-arrow-down"></i>
             </div>
         </div>
-        <div class="mt-4 text-[11px] font-semibold text-slate-500">
-            Incoming stock
-        </div>
+        <div class="mt-4 text-[11px] font-semibold text-slate-500">Incoming stock</div>
     </div>
 
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
@@ -119,57 +134,53 @@ ob_start();
                 <i class="fa-solid fa-arrow-up"></i>
             </div>
         </div>
-        <div class="mt-4 text-[11px] font-semibold text-slate-500">
-            Outgoing stock
-        </div>
+        <div class="mt-4 text-[11px] font-semibold text-slate-500">Outgoing stock</div>
     </div>
 </div>
 
 <!-- Inventory Graph Section -->
 <div class="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6 mb-8">
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col">
         <div class="flex items-center justify-between mb-5">
-            <h2 class="text-lg font-bold text-slate-800">Inventory Graph</h2>
-            <span class="text-xs text-slate-500">All items</span>
+            <div>
+                <h2 class="text-lg font-bold text-slate-800">Inventory Chart</h2>
+                <p class="text-sm text-slate-500">Live inventory totals across system modules.</p>
+            </div>
+            <span class="text-xs text-slate-500">Updated automatically</span>
+        </div>
+        <div style="position:relative; width:100%; height:320px;" class="mb-6">
+            <canvas id="inventoryChart" data-labels='<?= json_encode($chartLabels, JSON_HEX_APOS | JSON_HEX_QUOT) ?>'
+                data-values='<?= json_encode($chartCounts, JSON_HEX_APOS | JSON_HEX_QUOT) ?>'
+                data-colors='<?= json_encode($chartColors, JSON_HEX_APOS | JSON_HEX_QUOT) ?>'></canvas>
         </div>
 
-        <?php
-        $graphMax = max($stats);
-        $graphLabels = [
-            'categories' => 'Categories',
-            'products' => 'Products',
-            'suppliers' => 'Suppliers',
-            'stock_ins' => 'Stock In',
-            'stock_outs' => 'Stock Out',
-        ];
-        $graphColors = [
-            'categories' => 'from-blue-500 to-blue-600',
-            'products' => 'from-indigo-500 to-indigo-600',
-            'suppliers' => 'from-amber-500 to-amber-600',
-            'stock_ins' => 'from-emerald-500 to-emerald-600',
-            'stock_outs' => 'from-rose-500 to-rose-600',
-        ];
-        ?>
+        <!-- Fallback message shown only if Chart.js failed to load -->
+        <p id="chartFallback"
+            class="hidden text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-3 mb-6">
+            Chart could not be loaded. Please check your internet connection or contact the administrator.
+        </p>
 
-        <div class="space-y-4">
+        <div class="grid grid-cols-1 gap-4 mt-auto">
             <?php foreach ($graphLabels as $key => $label): ?>
             <?php $value = (int) ($stats[$key] ?? 0); ?>
-            <?php $percent = $graphMax > 0 ? min(100, round(($value / $graphMax) * 100)) : 0; ?>
-            <div>
-                <div class="flex items-center justify-between text-sm mb-1">
-                    <span class="font-semibold text-slate-700"><?= htmlspecialchars($label) ?></span>
-                    <span class="text-slate-500"><?= $value ?></span>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                    <div class="h-3 rounded-full bg-gradient-to-r <?= $graphColors[$key] ?>"
-                        style="width: <?= $percent ?>%"></div>
+            <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                            <?= htmlspecialchars($label) ?></p>
+                        <p class="mt-1 text-2xl font-bold text-slate-800"><?= $value ?></p>
+                    </div>
+                    <span
+                        class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                        <?= $value > 0 ? 'Active' : 'Empty' ?>
+                    </span>
                 </div>
             </div>
             <?php endforeach; ?>
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 h-fit">
         <h2 class="text-lg font-bold text-slate-800 mb-4">Role Access</h2>
         <div class="space-y-3">
             <div class="rounded-xl bg-slate-50 p-3">
@@ -191,7 +202,8 @@ ob_start();
     </div>
 </div>
 
+<script src="chart.js"></script>
+
 <?php
 $content = ob_get_clean();
 require __DIR__ . '/../includes/layout/layout.php';
-?>
