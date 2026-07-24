@@ -6,6 +6,10 @@ if (!defined('BASE_URL')) {
     define('BASE_URL', '/Team2_prodcts_inventory');
 }
 
+if (!defined('APP_BASE_URL')) {
+    define('APP_BASE_URL', BASE_URL . '/inventory');
+}
+
 function isLoggedIn(): bool
 {
     return isset($_SESSION['user_id']);
@@ -18,7 +22,7 @@ function redirectIfLogin(): void
         $role = strtolower($_SESSION['user_role'] ?? '');
         
         if ($role === 'admin') {
-            header('Location: ' . BASE_URL . '/dashboard/index.php');
+            header('Location: ' . APP_BASE_URL . '/dashboard/index.php');
         } else {
             header('Location: ' . BASE_URL . '/client/pages/index.php');
         }

@@ -14,8 +14,11 @@
 </head>
 
 <body class="bg-gray-50">
-    <?php require_once __DIR__ . '/../includes/Navbar.php';
-?>
+    <?php
+    require_once __DIR__ . '/../../config/config.php';
+    require_once __DIR__ . '/../../includes/session.php';
+    require_once __DIR__ . '/../includes/Navbar.php';
+    ?>
 
     <main>
         <!-- Hero -->

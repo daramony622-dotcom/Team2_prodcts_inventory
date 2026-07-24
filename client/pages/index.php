@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../config/config.php';
+require_once __DIR__ . '/../../includes/session.php';
 require_once __DIR__ . '/../includes/Navbar.php';
 ?>
 <!DOCTYPE html>
@@ -44,7 +45,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
 
                         <div class="mt-8 flex gap-4">
 
-                            <a href="../../dashboard/index.php"
+                            <a href="<?= BASE_URL ?>/inventory/dashboard/index.php"
                                 class="bg-white text-blue-500 px-6 py-3 rounded-lg font-semibold">
                                 Go to Dashboard
                             </a>
@@ -72,7 +73,7 @@ require_once __DIR__ . '/../includes/Navbar.php';
 
                         <div class="mt-8 flex gap-4">
 
-                            <a href="../../authentication/login.php"
+                            <a href="<?= BASE_URL ?>/authentication/login.php"
                                 class="bg-white text-blue-500 px-6 py-3 rounded-lg font-semibold">
                                 Get Started
                             </a>

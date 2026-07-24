@@ -32,7 +32,7 @@ if ($action === 'login') {
 
             // Exact path alignment according to your folder structure:
             $redirect = strtolower($user['role']) === 'admin'
-                ? BASE_URL . '/dashboard/index.php'
+                ? BASE_URL . '/inventory/dashboard/index.php'
                 : BASE_URL . '/client/pages/index.php';
 
             echo json_encode([

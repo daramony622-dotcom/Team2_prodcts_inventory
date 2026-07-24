@@ -1,5 +1,5 @@
 <?php $current = basename(dirname($_SERVER['PHP_SELF'])); ?>
-<?php $baseUrl = rtrim(BASE_URL ?? '/Team2_prodcts_inventory', '/'); ?>
+<?php $baseUrl = rtrim(APP_BASE_URL ?? (BASE_URL . '/inventory'), '/'); ?>
 
 <aside class="fixed top-0 left-0 h-screen w-64 bg-slate-900 text-white shadow-xl">
 
@@ -67,7 +67,7 @@
             </div>
         </div>
 
-        <a href="<?= htmlspecialchars($baseUrl) ?>/authentication/logout.php"
+        <a href="<?= htmlspecialchars(BASE_URL) ?>/authentication/logout.php"
             class="flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 py-3 rounded-xl transition">
             <i class="fa-solid fa-right-from-bracket"></i>
             Logout

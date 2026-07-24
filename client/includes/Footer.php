@@ -35,13 +35,13 @@
 
                 <ul class="space-y-2">
 
-                    <li><a href="../pages/index.php" class="hover:text-white">Home</a></li>
+                    <li><a href="<?= BASE_URL ?>/client/pages/index.php" class="hover:text-white">Home</a></li>
 
-                    <li><a href="../pages/AboutPage.php" class="hover:text-white">About</a></li>
+                    <li><a href="<?= BASE_URL ?>/client/pages/AboutPage.php" class="hover:text-white">About</a></li>
 
-                    <li><a href="../pages/ServicePage.php" class="hover:text-white">Services</a></li>
+                    <li><a href="<?= BASE_URL ?>/client/pages/ServicePage.php" class="hover:text-white">Services</a></li>
 
-                    <li><a href="../pages/ContactPage.php" class="hover:text-white">Contact</a></li>
+                    <li><a href="<?= BASE_URL ?>/client/pages/ContactPage.php" class="hover:text-white">Contact</a></li>
 
                 </ul>
 

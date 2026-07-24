@@ -12,8 +12,10 @@
 <body class="bg-gray-50">
 
     <?php
-require_once __DIR__ . '/../includes/Navbar.php';
-?>
+    require_once __DIR__ . '/../../config/config.php';
+    require_once __DIR__ . '/../../includes/session.php';
+    require_once __DIR__ . '/../includes/Navbar.php';
+    ?>
 
     <!-- Hero -->
     <section class="bg-gradient-to-r from-blue-700 to-indigo-700 text-white">

@@ -2,6 +2,6 @@
     <span class="text-lg font-bold text-gray-800">My Dashboard</span>
     <div class="flex items-center gap-4">
         <span class="text-sm text-gray-600">Hi, <?= htmlspecialchars($_SESSION['username'] ?? 'User') ?></span>
-        <a href="../authentication/logout.php" class="text-sm text-red-500 hover:underline">Logout</a>
+        <a href="<?= htmlspecialchars(BASE_URL) ?>/authentication/logout.php" class="text-sm text-red-500 hover:underline">Logout</a>
     </div>
 </nav>

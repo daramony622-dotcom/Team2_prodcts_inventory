@@ -33,6 +33,7 @@ requiredLogin();
 
     </div>
 
+    <?= $pageScripts ?? '' ?>
 </body>
 
 </html>
