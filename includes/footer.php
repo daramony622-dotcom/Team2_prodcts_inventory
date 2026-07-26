@@ -1,9 +1,9 @@
-<footer class="bg-gray-900 border-t-4 border-green-500 text-gray-300 px-6 py-5">
+<footer class="bg-slate-950/85 border-t border-slate-800/70 text-slate-300 px-6 py-6 backdrop-blur-xl">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
 
         <!-- Dashboard Title -->
         <div class="text-lg font-semibold">
-            <span class="text-green-500">Product Inventory</span>
+            <span class="text-sky-400">Product Inventory</span>
             <span class="text-white">Dashboard</span>
         </div>
 

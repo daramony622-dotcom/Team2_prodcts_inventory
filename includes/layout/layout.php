@@ -7,17 +7,13 @@ requiredLogin();
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard |Inventory Management</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-</head>
+<?php include __DIR__ . '/../header.php'; ?>
 
-<body class="font-sans bg-slate-100">
-
-    <?php include __DIR__ . '/../header.php'; ?>
+<body class="font-sans bg-[#07111d] text-slate-100" style="background-image:
+        radial-gradient(circle at 8% 10%, rgba(56,189,248,0.18), transparent 18%),
+        radial-gradient(circle at 92% 18%, rgba(37,99,235,0.14), transparent 16%),
+        radial-gradient(circle at 50% 100%, rgba(59,130,246,0.08), transparent 24%),
+        linear-gradient(180deg, rgba(10,25,47,0.96), rgba(15,23,42,0.96));">
 
     <?php include __DIR__ . '/../sideBar.php'; ?>
 

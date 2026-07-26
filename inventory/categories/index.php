@@ -7,14 +7,14 @@ requiredAdmin();
 ob_start();
 ?>
 
-<div class="flex-1 min-h-screen bg-gray-100 flex flex-col">
+<div class="flex-1 min-h-screen bg-slate-950 text-slate-100 flex flex-col">
 
     <!-- Hero Header Section -->
     <section
-        class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white py-10 px-6 rounded-b-3xl mx-4 sm:mx-6 mt-4">
+        class="bg-gradient-to-r from-slate-900 via-slate-950 to-sky-700 text-slate-100 py-10 px-6 rounded-b-3xl mx-4 sm:mx-6 mt-4 shadow-[0_35px_90px_-40px_rgba(56,189,248,0.22)]">
         <div class="max-w-7xl mx-auto">
             <h1 class="text-2xl md:text-3xl font-extrabold mb-1">Category Management</h1>
-            <p class="text-blue-100 text-sm md:text-base">
+            <p class="text-slate-300 text-sm md:text-base">
                 គ្រប់គ្រង និងរៀបចំប្រភេទផលិតផលរបស់អ្នកយ៉ាងងាយស្រួល
             </p>
         </div>
@@ -22,31 +22,32 @@ ob_start();
 
     <!-- Table Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 w-full mt-6 mb-12 flex-1">
-        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        <div
+            class="bg-slate-900/85 rounded-[2rem] shadow-[0_35px_90px_-45px_rgba(56,189,248,0.25)] border border-slate-800/70 overflow-hidden">
 
             <!-- Top Action Bar -->
-            <div class="p-5 bg-white border-b border-gray-100 flex flex-col gap-4">
+            <div class="p-5 bg-slate-950/80 border-b border-slate-800 flex flex-col gap-4">
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div>
-                        <h2 class="text-lg font-bold text-gray-800">All Categories</h2>
-                        <p class="text-xs text-gray-500">List of active categories in your inventory</p>
+                        <h2 class="text-lg font-bold text-slate-100">All Categories</h2>
+                        <p class="text-xs text-slate-400">List of active categories in your inventory</p>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <div class="relative">
                             <i
-                                class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                             <input id="searchCategories" type="text" placeholder="Search categories..."
-                                class="pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition w-full sm:w-64">
+                                class="pl-8 pr-3 py-2 text-sm border border-slate-700 rounded-2xl bg-slate-950 text-slate-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition w-full sm:w-64">
                         </div>
 
                         <button id="btnRefresh"
-                            class="flex items-center justify-center space-x-2 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition text-xs">
+                            class="flex items-center justify-center space-x-2 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 font-medium rounded-2xl transition text-xs">
                             <i class="fa-solid fa-rotate-right"></i>
                             <span>Refresh</span>
                         </button>
                         <button id="btnAddCategory"
-                            class="flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition text-xs">
+                            class="flex items-center justify-center space-x-2 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-2xl shadow-lg shadow-sky-500/20 transition text-xs">
                             <i class="fa-solid fa-plus"></i>
                             <span>Add Category</span>
                         </button>
@@ -54,37 +55,37 @@ ob_start();
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div class="rounded-xl bg-blue-50 p-3 border border-blue-100">
-                        <p class="text-[11px] uppercase tracking-wide text-blue-600 font-semibold">Total Categories</p>
-                        <h3 id="totalCategories" class="mt-1 text-2xl font-bold text-slate-800">0</h3>
+                    <div class="rounded-3xl bg-slate-950/75 p-4 border border-slate-800/70">
+                        <p class="text-[11px] uppercase tracking-wide text-sky-300 font-semibold">Total Categories</p>
+                        <h3 id="totalCategories" class="mt-1 text-2xl font-bold text-slate-100">0</h3>
                     </div>
-                    <div class="rounded-xl bg-emerald-50 p-3 border border-emerald-100">
-                        <p class="text-[11px] uppercase tracking-wide text-emerald-600 font-semibold">Status</p>
-                        <h3 class="mt-1 text-lg font-bold text-slate-800">Online</h3>
+                    <div class="rounded-3xl bg-slate-950/75 p-4 border border-slate-800/70">
+                        <p class="text-[11px] uppercase tracking-wide text-sky-300 font-semibold">Status</p>
+                        <h3 class="mt-1 text-lg font-bold text-slate-100">Online</h3>
                     </div>
-                    <div class="rounded-xl bg-amber-50 p-3 border border-amber-100">
-                        <p class="text-[11px] uppercase tracking-wide text-amber-600 font-semibold">Table Summary</p>
-                        <h3 id="tableSummary" class="mt-1 text-sm font-semibold text-slate-800">Showing all categories
+                    <div class="rounded-3xl bg-slate-950/75 p-4 border border-slate-800/70">
+                        <p class="text-[11px] uppercase tracking-wide text-sky-300 font-semibold">Table Summary</p>
+                        <h3 id="tableSummary" class="mt-1 text-sm font-semibold text-slate-100">Showing all categories
                         </h3>
                     </div>
                 </div>
             </div>
 
             <!-- Categories Table -->
-            <div class="overflow-x-auto p-4 md:p-5">
+            <div class="overflow-x-auto p-4 md:p-5 bg-slate-950/80">
                 <table class="w-full text-left border-separate border-spacing-y-2">
                     <thead>
-                        <tr class="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider">
+                        <tr class="bg-slate-900 text-slate-300 text-xs font-semibold uppercase tracking-wider">
                             <th class="py-3.5 px-6 rounded-l-xl">ID</th>
                             <th class="py-3.5 px-6">Category Name</th>
                             <th class="py-3.5 px-6">Description</th>
                             <th class="py-3.5 px-6 text-center rounded-r-xl">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="categoriesBody" class="text-sm text-gray-700">
+                    <tbody id="categoriesBody" class="text-sm text-slate-200">
                         <tr>
-                            <td colspan="4" class="py-12 text-center text-gray-400">
-                                <i class="fa-solid fa-spinner fa-spin text-2xl text-blue-600 mb-2"></i>
+                            <td colspan="4" class="py-12 text-center text-slate-400">
+                                <i class="fa-solid fa-spinner fa-spin text-2xl text-sky-400 mb-2"></i>
                                 <p class="text-xs">Loading categories...</p>
                             </td>
                         </tr>
@@ -97,47 +98,47 @@ ob_start();
 
     <!-- Category Insert/Edit Modal -->
     <div id="categoryModal"
-        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden transform transition-all">
+        class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-slate-950 rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-800">
             <div
-                class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 flex justify-between items-center text-white">
+                class="bg-gradient-to-r from-slate-900 via-slate-950 to-sky-700 px-6 py-4 flex justify-between items-center text-slate-100">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-full bg-slate-800/70 flex items-center justify-center">
                         <i class="fa-solid fa-layer-group"></i>
                     </div>
                     <div>
                         <h3 class="text-base font-bold" id="modalTitle">Add Category</h3>
-                        <p class="text-xs text-blue-100">Create or update a product category</p>
+                        <p class="text-xs text-slate-300">Create or update a product category</p>
                     </div>
                 </div>
-                <button id="closeModal" class="text-white/80 hover:text-white text-xl font-bold">&times;</button>
+                <button id="closeModal" class="text-slate-300 hover:text-white text-xl font-bold">&times;</button>
             </div>
 
             <div class="p-6">
-                <div id="formMessage" class="hidden mb-4 rounded-lg border px-3 py-2 text-sm"></div>
+                <div id="formMessage" class="hidden mb-4 rounded-lg border border-slate-700 px-3 py-2 text-sm"></div>
 
                 <form id="categoryForm" class="space-y-4">
                     <input type="hidden" id="categoryId" name="id">
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Category Name</label>
+                        <label class="block text-xs font-semibold text-slate-200 mb-1">Category Name</label>
                         <input type="text" id="categoryName" name="name" required placeholder="e.g. Electronics"
-                            class="w-full px-3.5 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                            class="w-full px-3.5 py-2 text-sm border border-slate-700 rounded-2xl bg-slate-900 text-slate-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
+                        <label class="block text-xs font-semibold text-slate-200 mb-1">Description</label>
                         <textarea id="categoryDesc" name="description" rows="4" placeholder="Enter category details..."
-                            class="w-full px-3.5 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"></textarea>
+                            class="w-full px-3.5 py-2 text-sm border border-slate-700 rounded-2xl bg-slate-900 text-slate-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition"></textarea>
                     </div>
 
-                    <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-100">
-                        <p class="text-xs text-slate-500">Use this form to insert or edit a category.</p>
+                    <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-800">
+                        <p class="text-xs text-slate-400">Use this form to insert or edit a category.</p>
                         <div class="flex justify-end space-x-2.5">
                             <button type="button" id="btnCancelModal"
-                                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg text-xs transition">Cancel</button>
+                                class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 font-medium rounded-2xl text-xs transition">Cancel</button>
                             <button type="submit" id="btnSaveCategory"
-                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-xs shadow-md transition">Save
+                                class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-2xl text-xs shadow-lg transition">Save
                                 Category</button>
                         </div>
                     </div>

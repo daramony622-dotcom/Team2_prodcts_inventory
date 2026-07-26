@@ -16,28 +16,28 @@ $suppliers = $supplierStmt->fetchAll(PDO::FETCH_ASSOC);
 ob_start();
 ?>
 
-<div class="max-w-4xl mx-auto bg-white shadow rounded-3xl p-6 md:p-8">
-    <h1 class="text-2xl font-bold text-slate-800 mb-6">Add Product</h1>
+<div class="max-w-4xl mx-auto bg-slate-950/95 border border-slate-800 shadow-2xl shadow-sky-500/10 rounded-3xl p-6 md:p-8">
+    <h1 class="text-2xl font-bold text-slate-100 mb-6">Add Product</h1>
 
     <form action="save.php" method="POST" enctype="multipart/form-data" class="space-y-4">
         <div>
-            <label class="block mb-2 font-medium text-slate-700">Product Name</label>
+            <label class="block mb-2 font-medium text-slate-200">Product Name</label>
             <input type="text" name="name"
-                class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                class="w-full border border-slate-700 rounded-2xl bg-slate-900 text-slate-100 p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none"
                 placeholder="Enter product name" required>
         </div>
 
         <div>
-            <label class="block mb-2 font-medium text-slate-700">Product Code</label>
+            <label class="block mb-2 font-medium text-slate-200">Product Code</label>
             <input type="text" name="product_code"
-                class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                class="w-full border border-slate-700 rounded-2xl bg-slate-900 text-slate-100 p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none"
                 placeholder="e.g. P-1001" required>
         </div>
 
         <div>
-            <label class="block mb-2 font-medium text-slate-700">Category</label>
+            <label class="block mb-2 font-medium text-slate-200">Category</label>
             <select name="category_id"
-                class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                class="w-full border border-slate-700 rounded-2xl bg-slate-900 text-slate-100 p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none"
                 required>
                 <option value="">-- Select Category --</option>
                 <?php foreach ($categories as $category): ?>
@@ -47,10 +47,10 @@ ob_start();
         </div>
 
         <div>
-            <label class="block mb-2 font-medium text-slate-700">Supplier</label>
+            <label class="block mb-2 font-medium text-slate-200">Supplier</label>
             <?php if (!empty($suppliers)): ?>
             <select name="supplier_id"
-                class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                class="w-full border border-slate-700 rounded-2xl bg-slate-900 text-slate-100 p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none"
                 required>
                 <option value="">-- Select Supplier --</option>
                 <?php foreach ($suppliers as $supplier): ?>
@@ -58,46 +58,46 @@ ob_start();
                 <?php endforeach; ?>
             </select>
             <?php else: ?>
-            <div class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-700">
+            <div class="rounded-3xl border border-slate-700 bg-slate-900/90 px-3 py-3 text-sm text-slate-300">
                 No suppliers are available yet. Please add a supplier first before creating a product.
             </div>
-            <select name="supplier_id" class="w-full border border-slate-300 rounded-lg p-3 bg-slate-100 mt-3" disabled>
+            <select name="supplier_id" class="w-full border border-slate-700 rounded-2xl p-3 bg-slate-900 text-slate-500 mt-3" disabled>
                 <option value="">-- Select Supplier --</option>
             </select>
             <?php endif; ?>
         </div>
 
         <div>
-            <label class="block mb-2 font-medium text-slate-700">Price ($)</label>
+            <label class="block mb-2 font-medium text-slate-200">Price ($)</label>
             <input type="number" name="price" step="0.01" min="0"
-                class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                class="w-full border border-slate-700 rounded-2xl bg-slate-900 text-slate-100 p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none"
                 required>
         </div>
 
         <div>
-            <label class="block mb-2 font-medium text-slate-700">Quantity</label>
+            <label class="block mb-2 font-medium text-slate-200">Quantity</label>
             <input type="number" name="quantity" min="0"
-                class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                class="w-full border border-slate-700 rounded-2xl bg-slate-900 text-slate-100 p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none"
                 required>
         </div>
 
         <div>
-            <label class="block mb-2 font-medium text-slate-700">Description</label>
+            <label class="block mb-2 font-medium text-slate-200">Description</label>
             <textarea name="description" rows="4"
-                class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"></textarea>
+                class="w-full border border-slate-700 rounded-2xl bg-slate-900 text-slate-100 p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none"></textarea>
         </div>
 
         <div>
-            <label class="block mb-2 font-medium text-slate-700">Product Image</label>
-            <input type="file" name="image" accept="image/*" class="w-full border border-slate-300 rounded-lg p-3">
+            <label class="block mb-2 font-medium text-slate-200">Product Image</label>
+            <input type="file" name="image" accept="image/*" class="w-full border border-slate-700 rounded-2xl bg-slate-900 text-slate-100 p-3">
         </div>
 
         <div class="flex gap-3 pt-2">
             <button type="submit" name="save_product"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold <?= empty($suppliers) ? 'opacity-50 cursor-not-allowed' : '' ?>"
+                class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-2xl font-semibold <?= empty($suppliers) ? 'opacity-50 cursor-not-allowed' : '' ?>"
                 <?= empty($suppliers) ? 'disabled' : '' ?>>Save Product</button>
             <a href="index.php"
-                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold">Cancel</a>
+                class="bg-slate-800 hover:bg-slate-700 text-slate-100 px-6 py-3 rounded-2xl font-semibold">Cancel</a>
         </div>
     </form>
 </div>

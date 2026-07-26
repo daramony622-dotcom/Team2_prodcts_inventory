@@ -6,9 +6,10 @@ header('Content-Type: application/json');
 $category_id = isset($_GET['category_id']) ? intval($_GET['category_id']) : 0;
 
 $sql = "SELECT p.id, p.product_name, p.product_code, p.price, p.quantity, p.image, p.description,
-               c.category_name 
+               c.category_name, s.supplier_name 
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id 
+        LEFT JOIN suppliers s ON p.supplier_id = s.id 
         WHERE 1=1";
 
 $params = [];

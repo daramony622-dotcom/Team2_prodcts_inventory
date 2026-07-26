@@ -10,42 +10,45 @@ $(document).ready(function () {
 			success: function (data) {
 				let rows = "";
 				if (data.length === 0) {
-					rows = `<tr><td colspan="6" class="py-12 text-center text-slate-400 bg-white rounded-2xl shadow-sm">
-                            <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
+					rows = `<tr><td colspan="6" class="py-12 text-center text-slate-400 bg-slate-900 rounded-2xl shadow-sm">
+                            <i class="fa-solid fa-inbox text-3xl mb-2 block text-sky-400"></i>
                             <p class="text-sm font-medium">No suppliers found.</p>
                         </td></tr>`;
 				} else {
 					data.forEach(function (s) {
 						rows += `
-                        <tr class="align-top">
-                            <td class="py-4 px-4 font-medium text-gray-900 bg-white rounded-l-xl shadow-sm">#${s.id}</td>
-                            <td class="py-4 px-4 font-semibold text-gray-900 bg-white shadow-sm">${s.supplier_name}</td>
-                            <td class="py-4 px-4 text-gray-600 bg-white shadow-sm">
+                        <tr class="align-top hover:bg-slate-900 transition-colors duration-200"
+                            style="background-color: rgba(15,23,42,0.92); box-shadow: 0 18px 50px -36px rgba(56,189,248,0.45);">
+                            <td class="py-4 px-4 font-medium text-slate-100 bg-slate-950/80 rounded-l-xl shadow-sm"
+                                style="background-color: rgba(15,23,42,0.9); border: 1px solid rgba(148,163,184,0.12);">#${s.id}</td>
+                            <td class="py-4 px-4 font-semibold text-sky-200 bg-slate-950/80 shadow-sm border border-slate-800/70"
+                                style="background-color: rgba(15,23,42,0.9);">${s.supplier_name}</td>
+                            <td class="py-4 px-4 text-slate-300 bg-slate-950/70 shadow-sm">
                                 <div class="flex items-center gap-2">
-                                    <i class="fa-solid fa-phone text-orange-500 text-xs"></i>
-                                    ${s.phone || '<span class="text-gray-400">-</span>'}
+                                    <i class="fa-solid fa-phone text-sky-400 text-xs"></i>
+                                    ${s.phone || '<span class="text-slate-500">-</span>'}
                                 </div>
                             </td>
-                            <td class="py-4 px-4 text-gray-600 bg-white shadow-sm">
+                            <td class="py-4 px-4 text-slate-300 bg-slate-950/70 shadow-sm">
                                 <div class="flex items-center gap-2">
-                                    <i class="fa-solid fa-envelope text-blue-500 text-xs"></i>
-                                    ${s.email ? '<a href="mailto:' + s.email + '" class="text-blue-600 hover:underline">' + s.email + "</a>" : '<span class="text-gray-400">-</span>'}
+                                    <i class="fa-solid fa-envelope text-sky-400 text-xs"></i>
+                                    ${s.email ? '<a href="mailto:' + s.email + '" class="text-sky-300 hover:underline">' + s.email + "</a>" : '<span class="text-slate-500">-</span>'}
                                 </div>
                             </td>
-                            <td class="py-4 px-4 text-gray-600 bg-white shadow-sm">
+                            <td class="py-4 px-4 text-slate-300 bg-slate-950/70 shadow-sm">
                                 <div class="flex items-start gap-2">
-                                    <i class="fa-solid fa-map-marker-alt text-red-500 text-xs mt-0.5"></i>
-                                    <span class="line-clamp-2">${s.address || '<span class="text-gray-400">-</span>'}</span>
+                                    <i class="fa-solid fa-map-marker-alt text-sky-400 text-xs mt-0.5"></i>
+                                    <span class="line-clamp-2">${s.address || '<span class="text-slate-500">-</span>'}</span>
                                 </div>
                             </td>
-                            <td class="py-4 px-4 text-center bg-white rounded-r-xl shadow-sm">
+                            <td class="py-4 px-4 text-center bg-slate-950/70 rounded-r-xl shadow-sm">
                                 <div class="flex justify-center gap-2">
                                     <button type="button" onclick="editSupplier(${s.id})" 
-                                        class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
+                                        class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded text-xs font-semibold transition shadow-[0_10px_25px_-15px_rgba(56,189,248,0.75)]">
                                         <i class="fa-solid fa-edit mr-1"></i>Edit
                                     </button>
                                     <button type="button" onclick="deleteSupplier(${s.id})" 
-                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
+                                        class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded text-xs font-semibold transition shadow-sm">
                                         <i class="fa-solid fa-trash mr-1"></i>Delete
                                     </button>
                                 </div>
@@ -58,8 +61,8 @@ $(document).ready(function () {
 			},
 			error: function () {
 				$("#supplierTableBody")
-					.html(`<tr><td colspan="6" class="py-12 text-center text-red-500 bg-white rounded-2xl shadow-sm">
-                    <i class="fa-solid fa-exclamation-circle text-3xl mb-2 block"></i>
+					.html(`<tr><td colspan="6" class="py-12 text-center text-slate-400 bg-slate-900 rounded-2xl shadow-sm">
+                    <i class="fa-solid fa-exclamation-circle text-3xl mb-2 block text-sky-400"></i>
                     <p class="text-sm font-medium">Failed to load suppliers.</p>
                 </td></tr>`);
 			},

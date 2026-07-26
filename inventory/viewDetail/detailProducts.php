@@ -58,7 +58,7 @@ try {
     }
 
     // Get stock in information (purchase history)
-    $stockInSql = "SELECT 
+    $stockInSql = "SELECT
                         SUM(quantity) AS total_stock_in,
                         MAX(stock_in_date) AS last_stock_in_date,
                         AVG(purchase_price) AS avg_purchase_price

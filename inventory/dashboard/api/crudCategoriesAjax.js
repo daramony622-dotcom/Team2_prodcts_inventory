@@ -144,8 +144,8 @@ $(document).ready(function () {
 		if (filtered.length === 0) {
 			rows = `
                 <tr>
-                    <td colspan="4" class="py-12 text-center text-slate-400 bg-white rounded-2xl shadow-sm">
-                        <i class="fa-solid fa-folder-open text-3xl mb-2 block"></i>
+                    <td colspan="4" class="py-12 text-center text-slate-400 bg-slate-900 rounded-2xl shadow-sm">
+                        <i class="fa-solid fa-folder-open text-3xl mb-2 block text-sky-400"></i>
                         <p class="text-sm font-medium">No categories found.</p>
                     </td>
                 </tr>`;
@@ -157,26 +157,26 @@ $(document).ready(function () {
 				const catName = cat.name || cat.category_name || "Unnamed";
 				rows += `
                     <tr class="align-top">
-                        <td class="py-4 px-6 font-medium text-gray-900 bg-white rounded-l-xl shadow-sm">#${cat.id}</td>
-                        <td class="py-4 px-6 font-semibold text-blue-600 bg-white shadow-sm">
+                        <td class="py-4 px-6 font-medium text-slate-100 bg-slate-900 rounded-l-xl shadow-sm">#${cat.id}</td>
+                        <td class="py-4 px-6 font-semibold text-slate-100 bg-slate-900 shadow-sm">
                             <div class="flex items-center space-x-2">
-                                <span class="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>
+                                <span class="w-2 h-2 bg-sky-400 rounded-full inline-block"></span>
                                 <span>${catName}</span>
                             </div>
                         </td>
-                        <td class="py-4 px-6 text-gray-500 max-w-md bg-white shadow-sm">
+                        <td class="py-4 px-6 text-slate-300 max-w-md bg-slate-900 shadow-sm">
                             <div class="line-clamp-2">${cat.description || "-"}</div>
                         </td>
-                        <td class="py-4 px-6 text-center bg-white rounded-r-xl shadow-sm">
+                        <td class="py-4 px-6 text-center bg-slate-900 rounded-r-xl shadow-sm">
                             <div class="flex justify-center space-x-2">
-                                <button class="edit-btn px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-medium rounded-md text-xs transition flex items-center space-x-1"
+                                <button class="edit-btn px-2.5 py-1 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-md text-xs transition flex items-center space-x-1"
                                         data-id="${cat.id}"
                                         data-name="${catName}"
                                         data-desc="${cat.description || ""}">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                     <span>Edit</span>
                                 </button>
-                                <button class="delete-btn px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-md text-xs transition flex items-center space-x-1"
+                                <button class="delete-btn px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-md text-xs transition flex items-center space-x-1"
                                         data-id="${cat.id}">
                                     <i class="fa-solid fa-trash"></i>
                                     <span>Delete</span>
@@ -201,34 +201,32 @@ $(document).ready(function () {
 		if (!message) {
 			box.addClass("hidden");
 			box.removeClass(
-				"bg-blue-50 border-blue-200 text-blue-700 bg-emerald-50 border-emerald-200 text-emerald-700 bg-red-50 border-red-200 text-red-700",
+				"bg-slate-950/75 border-slate-700 text-slate-100 bg-slate-950/75 border-slate-700 text-slate-100 bg-slate-950/75 border-slate-700 text-slate-100",
 			);
 			return;
 		}
 
 		box.removeClass("hidden");
 		box.removeClass(
-			"bg-blue-50 border-blue-200 text-blue-700 bg-emerald-50 border-emerald-200 text-emerald-700 bg-red-50 border-red-200 text-red-700",
+			"bg-slate-950/75 border-slate-700 text-slate-100 bg-slate-950/75 border-slate-700 text-slate-100 bg-slate-950/75 border-slate-700 text-slate-100",
 		);
 
 		if (type === "success") {
-			box.addClass("bg-emerald-50 border-emerald-200 text-emerald-700");
+			box.addClass("bg-slate-950/75 border-sky-500/20 text-sky-200");
 		} else if (type === "error") {
-			box.addClass("bg-red-50 border-red-200 text-red-700");
+			box.addClass("bg-slate-950/75 border-rose-500/20 text-rose-200");
 		} else {
-			box.addClass("bg-blue-50 border-blue-200 text-blue-700");
+			box.addClass("bg-slate-950/75 border-sky-500/20 text-slate-100");
 		}
 
-		box.text(message);
-	}
-
-	function showError(msg) {
-		$("#categoriesBody").html(`
+		function showError(msg) {
+			$("#categoriesBody").html(`
             <tr>
                 <td colspan="4" class="py-8 text-center text-red-500 font-medium">
                     <i class="fa-solid fa-triangle-exclamation mb-1 text-lg block"></i> ${msg}
                 </td>
             </tr>
         `);
+		}
 	}
 });
