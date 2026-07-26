@@ -12,10 +12,10 @@ try {
     if ($selected_category_id > 0) {
         // Fetch products matching category
         $stmt = $pdo->prepare("SELECT p.*, c.category_name 
-                               FROM products p 
-                               LEFT JOIN categories c ON p.category_id = c.id 
-                               WHERE p.category_id = ? 
-                               ORDER BY p.id DESC");
+                            FROM products p 
+                            LEFT JOIN categories c ON p.category_id = c.id 
+                            WHERE p.category_id = ? 
+                            ORDER BY p.id DESC");
         $stmt->execute([$selected_category_id]);
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
