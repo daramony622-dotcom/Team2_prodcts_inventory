@@ -149,7 +149,7 @@ ob_start();
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="<?= htmlspecialchars(APP_BASE_URL) ?>/categories/api/crudCategoriesAjax.js"></script>
+<script src="<?= htmlspecialchars(APP_BASE_URL) ?>/dashboard/api/crudCategoriesAjax.js"></script>
 
 <?php
 $content = ob_get_clean();

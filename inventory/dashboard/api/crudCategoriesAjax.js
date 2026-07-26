@@ -28,6 +28,7 @@ $(document).ready(function () {
 		showFormMessage("", "hidden");
 	});
 
+	// 1. SAVE / UPDATE CATEGORY
 	$("#categoryForm").on("submit", function (e) {
 		e.preventDefault();
 
@@ -37,7 +38,7 @@ $(document).ready(function () {
 		showFormMessage("Saving category...", "info");
 
 		$.ajax({
-			url: "insertCategories.php",
+			url: "insertCategories.php", // Make sure this PHP file is in the same folder as index.php
 			type: "POST",
 			data: formData,
 			dataType: "json",
@@ -67,6 +68,7 @@ $(document).ready(function () {
 		});
 	});
 
+	// 2. EDIT CATEGORY
 	$(document).on("click", ".edit-btn", function () {
 		const id = $(this).data("id");
 		const name = $(this).data("name");
@@ -81,12 +83,13 @@ $(document).ready(function () {
 		$("#categoryModal").removeClass("hidden").addClass("flex");
 	});
 
+	// 3. DELETE CATEGORY
 	$(document).on("click", ".delete-btn", function () {
 		const id = $(this).data("id");
 
 		if (confirm("Are you sure you want to delete this category?")) {
 			$.ajax({
-				url: "deleteCategories.php",
+				url: "deleteCategories.php", // Relative URL to delete file
 				type: "POST",
 				data: { id: id },
 				dataType: "json",
@@ -104,9 +107,10 @@ $(document).ready(function () {
 		}
 	});
 
+	// 4. LOAD CATEGORIES
 	function loadCategories() {
 		$.ajax({
-			url: "getCategories.php",
+			url: "getCategories.php", // Relative URL to get categories file
 			type: "GET",
 			dataType: "json",
 			success: function (response) {
@@ -118,8 +122,9 @@ $(document).ready(function () {
 					showError("Failed to load categories.");
 				}
 			},
-			error: function () {
-				showError("Error connecting to controller.");
+			error: function (xhr, status, error) {
+				console.error("AJAX Error:", status, error);
+				showError("Error connecting to server endpoint.");
 			},
 		});
 	}
@@ -129,7 +134,9 @@ $(document).ready(function () {
 		let filtered = categoryData.filter(function (cat) {
 			if (!searchTerm) return true;
 			return (
-				(cat.name || "").toLowerCase().includes(searchTerm) ||
+				(cat.name || cat.category_name || "")
+					.toLowerCase()
+					.includes(searchTerm) ||
 				(cat.description || "").toLowerCase().includes(searchTerm)
 			);
 		});
@@ -147,13 +154,14 @@ $(document).ready(function () {
 			);
 		} else {
 			$.each(filtered, function (index, cat) {
+				const catName = cat.name || cat.category_name || "Unnamed";
 				rows += `
                     <tr class="align-top">
                         <td class="py-4 px-6 font-medium text-gray-900 bg-white rounded-l-xl shadow-sm">#${cat.id}</td>
                         <td class="py-4 px-6 font-semibold text-blue-600 bg-white shadow-sm">
                             <div class="flex items-center space-x-2">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>
-                                <span>${cat.name}</span>
+                                <span>${catName}</span>
                             </div>
                         </td>
                         <td class="py-4 px-6 text-gray-500 max-w-md bg-white shadow-sm">
@@ -163,7 +171,7 @@ $(document).ready(function () {
                             <div class="flex justify-center space-x-2">
                                 <button class="edit-btn px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-medium rounded-md text-xs transition flex items-center space-x-1"
                                         data-id="${cat.id}"
-                                        data-name="${cat.name}"
+                                        data-name="${catName}"
                                         data-desc="${cat.description || ""}">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                     <span>Edit</span>

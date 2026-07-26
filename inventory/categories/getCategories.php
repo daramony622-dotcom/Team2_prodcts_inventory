@@ -1,21 +1,21 @@
 <?php
+// categories/getCategories.php
 header('Content-Type: application/json');
-require_once __DIR__ . '/../../config/database.php';
+
+require_once __DIR__ . '/../../config/config.php';
 
 try {
-    $stmt = $pdo->prepare(
-        "SELECT id, category_name AS name, description FROM categories ORDER BY id DESC"
-    );
-    $stmt->execute();
-    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Select category fields
+    $stmt = $pdo->query("SELECT id, category_name AS name, description FROM categories ORDER BY id DESC");
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode([
         'status' => 'success',
-        'data'   => $categories
+        'data' => $data
     ]);
-} catch (PDOException $e) {
+} catch (Exception $e) {
     echo json_encode([
-        'status'  => 'error',
-        'message' => 'Failed to fetch categories.'
+        'status' => 'error',
+        'message' => 'Failed to retrieve categories: ' . $e->getMessage()
     ]);
 }

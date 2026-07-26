@@ -3,18 +3,22 @@ require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../includes/session.php';
 require_once __DIR__ . '/../../includes/auth.php';
 
+// Required admin security check
 requiredAdmin();
 
 $search = trim($_GET['search'] ?? '');
 $categoryFilter = (int) ($_GET['category_id'] ?? 0);
 $supplierFilter = (int) ($_GET['supplier_id'] ?? 0);
 
+// Fetch categories for dropdown
 $categoryStmt = $pdo->query('SELECT id, category_name AS name FROM categories ORDER BY category_name ASC');
 $categories = $categoryStmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Fetch suppliers for dropdown
 $supplierStmt = $pdo->query('SELECT id, supplier_name AS name FROM suppliers ORDER BY supplier_name ASC');
 $suppliers = $supplierStmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Build query
 $sql = "SELECT p.id, p.product_name, p.product_code, p.price, p.quantity, p.image, p.description,
             c.category_name, s.supplier_name
         FROM products p
@@ -158,19 +162,27 @@ ob_start();
                         <?php foreach ($products as $row): ?>
                         <tr class="align-top">
                             <td class="py-4 px-4 font-medium text-gray-900 bg-white rounded-l-xl shadow-sm">
-                                #<?= (int) $row['id'] ?></td>
+                                #<?= (int) $row['id'] ?>
+                            </td>
                             <td class="py-4 px-4 bg-white shadow-sm">
                                 <?php
-                                        $image = !empty($row['image']) ? $row['image'] : '';
-                                        $imagePath = !empty($image) && file_exists(__DIR__ . '/../../assets/uploads/products/' . $image)
-                                            ? BASE_URL . '/assets/uploads/products/' . $image
-                                            : BASE_URL . '/client/pages/assets/images/default.svg';
-                                        ?>
+                                    $image = !empty($row['image']) ? trim($row['image']) : '';
+                                    
+                                    // Check server filesystem for file existence
+                                    if (!empty($image) && file_exists(__DIR__ . '/../../assets/uploads/products/' . $image)) {
+                                        $imagePath = BASE_URL . '/assets/uploads/products/' . $image;
+                                    } else {
+                                        // Fallback online placeholder if image is missing
+                                        $imagePath = 'https://placehold.co/100x100/f1f5f9/94a3b8?text=No+Image';
+                                    }
+                                ?>
                                 <img src="<?= htmlspecialchars($imagePath) ?>" width="60" height="60"
-                                    class="rounded border object-cover bg-slate-50" alt="Product image">
+                                    class="w-14 h-14 rounded-lg border border-slate-200 object-cover bg-slate-50"
+                                    alt="<?= htmlspecialchars($row['product_name']) ?>">
                             </td>
                             <td class="py-4 px-4 font-semibold text-blue-600 bg-white shadow-sm">
-                                <?= htmlspecialchars($row['product_name']) ?></td>
+                                <?= htmlspecialchars($row['product_name']) ?>
+                            </td>
                             <td class="py-4 px-4 bg-white shadow-sm"><?= htmlspecialchars($row['product_code']) ?></td>
                             <td class="py-4 px-4 bg-white shadow-sm">
                                 <?= htmlspecialchars($row['category_name'] ?? '-') ?></td>
@@ -211,7 +223,7 @@ ob_start();
 <?php
 $content = ob_get_clean();
 
-// Fixed jQuery path via CDN to resolve the 404 error
+// Fixed jQuery path via CDN
 $pageScripts = '<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>';
 
 ob_start();
