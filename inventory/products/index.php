@@ -210,9 +210,13 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-$pageScripts = '<script src="' . BASE_URL . '/js/jquery-3.7.1.min.js"></script>';
+
+// Fixed jQuery path via CDN to resolve the 404 error
+$pageScripts = '<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>';
+
 ob_start();
 require_once __DIR__ . '/../viewDetail/productDetailModel.php';
 $pageScripts .= ob_get_clean();
+
 require_once __DIR__ . '/../../includes/layout/layout.php';
 ?>

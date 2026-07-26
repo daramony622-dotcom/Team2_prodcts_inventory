@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		return;
 	}
 
+
 	new Chart(canvas, {
 		type: "bar",
 		data: {
@@ -47,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				},
 			],
 		},
+
 		options: {
 			responsive: true,
 			maintainAspectRatio: false,

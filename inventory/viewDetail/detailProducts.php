@@ -1,4 +1,5 @@
 <?php
+
 /**
  * viewDetail/detailProducts.php
  * Returns a single product's details as JSON for the "View Details" modal.
@@ -6,6 +7,7 @@
  * Expects: GET ?id=123
  * Adjust the require path, table name, and column names to match your schema.
  */
+
 
 session_start();
 header('Content-Type: application/json');
@@ -67,11 +69,11 @@ try {
     $stockIn = $stockInStmt->fetch(PDO::FETCH_ASSOC) ?: ['total_stock_in' => 0, 'last_stock_in_date' => null, 'avg_purchase_price' => 0];
 
     // Get stock out information (sales history)
-    $stockOutSql = "SELECT 
+    $stockOutSql = "SELECT
                         SUM(quantity) AS total_stock_out,
                         MAX(stock_out_date) AS last_stock_out_date,
                         AVG(selling_price) AS avg_selling_price
-                    FROM stock_outs 
+                    FROM stock_outs
                     WHERE product_id = :id";
     $stockOutStmt = $pdo->prepare($stockOutSql);
     $stockOutStmt->execute(['id' => $id]);
@@ -87,6 +89,7 @@ try {
     } elseif ($totalSales >= 50) {
         $performance = 'Fair';
     }
+
 
     $response = [
         'success' => true,
@@ -107,6 +110,7 @@ try {
         'avg_selling_price' => number_format((float) ($stockOut['avg_selling_price'] ?? 0), 2, '.', ''),
         'performance' => $performance,
     ];
+
 
     echo json_encode($response);
 

@@ -30,7 +30,7 @@ function uploadProductImage(array $file, string $uploadDir): string
 }
 
 if (isset($_POST['save_product'])) {
-    $name        = trim($_POST['name'] ?? '');
+    $name         = trim($_POST['name'] ?? '');
     $productCode = trim($_POST['product_code'] ?? '');
     $categoryId  = (int) ($_POST['category_id'] ?? 0);
     $supplierId  = (int) ($_POST['supplier_id'] ?? 0);
@@ -51,24 +51,41 @@ if (isset($_POST['save_product'])) {
         exit;
     }
 
-    $stmt = $pdo->prepare(
-        'INSERT INTO products (category_id, supplier_id, product_name, product_code, price, quantity, description, image)
-        VALUES (:category_id, :supplier_id, :product_name, :product_code, :price, :quantity, :description, :image)'
-    );
+    try {
+        $stmt = $pdo->prepare(
+            'INSERT INTO products (category_id, supplier_id, product_name, product_code, price, quantity, description, image)
+            VALUES (:category_id, :supplier_id, :product_name, :product_code, :price, :quantity, :description, :image)'
+        );
 
-    $stmt->execute([
-        ':category_id' => $categoryId,
-        ':supplier_id' => $supplierId,
-        ':product_name' => $name,
-        ':product_code' => $productCode,
-        ':price' => $price,
-        ':quantity' => $quantity,
-        ':description' => $description,
-        ':image' => $image,
-    ]);
+        $stmt->execute([
+            ':category_id' => $categoryId,
+            ':supplier_id' => $supplierId,
+            ':product_name' => $name,
+            ':product_code' => $productCode,
+            ':price' => $price,
+            ':quantity' => $quantity,
+            ':description' => $description,
+            ':image' => $image,
+        ]);
 
-    header('Location: ' . BASE_URL . '/products/index.php');
-    exit;
+        header('Location: ' . APP_BASE_URL . '/products/index.php');
+        exit;
+
+    } catch (PDOException $e) {
+        // Check for MySQL Duplicate Entry Error (Code 1062)
+        if ($e->errorInfo[1] == 1062) {
+            // Optional: delete uploaded image if insert fails
+            if (!empty($image) && file_exists($uploadDir . $image)) {
+                unlink($uploadDir . $image);
+            }
+            
+            header('Location: ' . APP_BASE_URL . '/products/add.php?error=duplicate_product_code');
+            exit;
+        }
+        
+        // Re-throw other database errors if they aren't duplicate entries
+        throw $e;
+    }
 }
 
 if (isset($_POST['update_product'])) {
@@ -105,33 +122,42 @@ if (isset($_POST['update_product'])) {
         $image = $newImage;
     }
 
-    $stmt = $pdo->prepare(
-        'UPDATE products
-        SET category_id = :category_id,
-        supplier_id = :supplier_id,
-        product_name = :product_name,
-        product_code = :product_code,
-        price = :price,
-        quantity = :quantity,
-        description = :description,
-        image = :image
-        WHERE id = :id'
-    );
+    try {
+        $stmt = $pdo->prepare(
+            'UPDATE products
+            SET category_id = :category_id,
+            supplier_id = :supplier_id,
+            product_name = :product_name,
+            product_code = :product_code,
+            price = :price,
+            quantity = :quantity,
+            description = :description,
+            image = :image
+            WHERE id = :id'
+        );
 
-    $stmt->execute([
-        ':category_id' => $categoryId,
-        ':supplier_id' => $supplierId,
-        ':product_name' => $name,
-        ':product_code' => $productCode,
-        ':price' => $price,
-        ':quantity' => $quantity,
-        ':description' => $description,
-        ':image' => $image,
-        ':id' => $id,
-    ]);
+        $stmt->execute([
+            ':category_id' => $categoryId,
+            ':supplier_id' => $supplierId,
+            ':product_name' => $name,
+            ':product_code' => $productCode,
+            ':price' => $price,
+            ':quantity' => $quantity,
+            ':description' => $description,
+            ':image' => $image,
+            ':id' => $id,
+        ]);
 
-    header('Location: ' . APP_BASE_URL . '/products/index.php');
-    exit;
+        header('Location: ' . APP_BASE_URL . '/products/index.php');
+        exit;
+
+    } catch (PDOException $e) {
+        if ($e->errorInfo[1] == 1062) {
+            header('Location: ' . APP_BASE_URL . '/products/edit.php?id=' . $id . '&error=duplicate_product_code');
+            exit;
+        }
+        throw $e;
+    }
 }
 
 header('Location: ' . APP_BASE_URL . '/products/index.php');
